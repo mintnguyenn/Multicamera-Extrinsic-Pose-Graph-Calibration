@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>multi_camera_calibration</name>
+  <version>0.0.1</version>
+  <description>multi camera calibration package</description>
+
+  <maintainer email="huynhatminh.nguyen@student.uts.edu.au">Minh Nguyen</maintainer>
+
+  <license>MIT</license>
+
+  <author email="huynhatminh.nguyen@student.uts.edu.au">Minh Nguyen</author>
+
+ <url type="website">http://https://canvas.uts.edu.au/courses/18651</url>
+
+  <!-- Use test_depend for packages you need only for testing: -->
+  <!--   <test_depend>gtest</test_depend> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>roslib</build_depend>
+
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>rosbag</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>message_runtime</run_depend>
+
+</package>
+

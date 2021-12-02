@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/mintnguyen/Documents/pfms-2021s-mintng/skeleton/a3_pf_install/include/**",
+        "/home/mintnguyen/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/mintnguyen/pfms_catkin_ws/devel/include/**",
+        "/home/mintnguyen/catkin_ws/src/ddynamic_reconfigure/include/**",
+        "/home/mintnguyen/catkin_ws/src/dobot_magician_driver/include/**",
+        "/home/mintnguyen/pfms_catkin_ws/src/pfms_support/local_map/include/**",
+        "/home/mintnguyen/pfms_catkin_ws/src/pfms_support/map_ray_caster/include/**",
+        "/home/mintnguyen/catkin_ws/src/realsense-ros/realsense2_camera/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}
