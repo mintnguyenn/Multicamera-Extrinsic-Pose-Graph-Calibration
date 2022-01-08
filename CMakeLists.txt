@@ -1,11 +1,15 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(multi_camera_calibration)
 
+
 find_package(catkin REQUIRED COMPONENTS
+  cv_bridge
   roscpp
+  sensor_msgs
   rosbag # Needed for rosbag manipulation
   roslib # Needed for ros::package::getPath
 )
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
@@ -28,6 +32,7 @@ include_directories(
   src
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ###############
@@ -48,13 +53,10 @@ add_executable(${PROJECT_NAME}_ex src/main.cpp src/ros_wrapper.cpp)
 add_dependencies(${PROJECT_NAME}_ex ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_ex ${catkin_LIBRARIES} ${PROJECT_NAME}_my_library)
+target_link_libraries(${PROJECT_NAME}_ex ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${PROJECT_NAME}_my_library)
 
 
 #############
 ## Testing ##
 #############
 ## Add gtest based cpp test target and link libraries
-
-
-

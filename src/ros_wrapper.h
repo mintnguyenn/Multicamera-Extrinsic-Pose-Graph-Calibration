@@ -7,20 +7,22 @@
 #include <iostream>
 #include <string>
 
+#include "sensor_msgs/Image.h"
+
 #include <thread>
 #include <mutex>
 #include <deque>
 #include <atomic>
 
-//! The class we have developed included here in our node
+#include <image_transport/image_transport.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/aruco.hpp>
+#include <opencv2/aruco/dictionary.hpp>
 
-/*!
- *  \brief     Ros Wrapper Class
- *  \details
- *  This class is used as a wrapper for ros of the project
- *  \author    Huy Nhat Minh Nguyen - SID 13734569
- *  \date      2021-11-11
- */
+
+
+//! The class we have developed included here in our node
 
 class RosWrapper{
 
@@ -29,7 +31,7 @@ public:
    *
    *  Will take the node handle and initialise the callbacks and internal variables
    */
-    RosWrapper(){};
+    RosWrapper(ros::NodeHandle nh);
 
    /*! @brief RosWrapper destructor.
    *
@@ -46,6 +48,16 @@ public:
 
 
 private:
+    void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+
+private:
+    ros::NodeHandle nh_;
+    ros::Subscriber sub_;
+
+    sensor_msgs::ImageConstPtr img_;
+
+    std::mutex mtx_;
+
 
 };
 
