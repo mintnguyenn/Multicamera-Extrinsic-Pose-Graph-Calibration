@@ -48,8 +48,8 @@ void RosWrapper::seperateThread()
     img = img_;
     lck.unlock();
 
-    cv::Mat inputImage = cv_bridge::toCvShare(img, "bgr8")->image;
-    // cv::Mat inputImage = cv::imread("/home/mintnguyen/Pictures/aruco1.png", 1);
+    // cv::Mat inputImage = cv_bridge::toCvShare(img, "bgr8")->image;
+    cv::Mat inputImage = cv::imread("/home/mintnguyen/Pictures/aruco1.png", 1);
 
     // Marker detection
     std::vector<int> markerIds; // Create a vector contains marker id
@@ -73,7 +73,11 @@ void RosWrapper::seperateThread()
       if (valid > 0)
         cv::aruco::drawAxis(outputImage, cameraMatrix, distCoeffs, rvec, tvec, 0.1);
 
-std::cout << rvec << "; " << tvec << std::endl;
+for (auto pt : markerCorners){
+  std::cout << pt.size() << std::endl;
+}
+std::cout << std::endl;
+      // std::cout << rvec << "; " << tvec << std::endl;
       // std::vector<cv::Vec3d> rvecs, tvecs;
       // cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.04, cameraMatrix, distCoeffs, rvecs, tvecs);
       // for (int i = 0; i < rvecs.size(); ++i)
