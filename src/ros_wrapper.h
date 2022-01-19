@@ -20,35 +20,36 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/aruco/dictionary.hpp>
 
-
+#include <yaml-cpp/yaml.h>
+#include <unistd.h>
 
 //! The class we have developed included here in our node
 
-class RosWrapper{
+class RosWrapper
+{
 
 public:
-   /*! @brief RosWrapper constructor.
-   *
-   *  Will take the node handle and initialise the callbacks and internal variables
-   */
+    /*! @brief RosWrapper constructor.
+     *
+     *  Will take the node handle and initialise the callbacks and internal variables
+     */
     RosWrapper(ros::NodeHandle nh);
 
-   /*! @brief RosWrapper destructor.
-   *
-   *  Will tear down the object
-   */
+    /*! @brief RosWrapper destructor.
+     *
+     *  Will tear down the object
+     */
     ~RosWrapper();
 
     /*! @brief seperate thread.
-    *
-    *  The main processing thread that will run continously and utilise the data
-    *  When data needs to be combined then running a thread seperate to callback will gurantee data is processed
-    */
+     *
+     *  The main processing thread that will run continously and utilise the data
+     *  When data needs to be combined then running a thread seperate to callback will gurantee data is processed
+     */
     void seperateThread();
 
-
 private:
-    void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+    void imageCallback(const sensor_msgs::ImageConstPtr &msg);
 
 private:
     ros::NodeHandle nh_;
@@ -58,7 +59,9 @@ private:
 
     std::mutex mtx_;
 
-
+    cv::Ptr<cv::aruco::Dictionary> dictionary;
+    std::vector<int> ids;
+    std::vector<std::vector<cv::Point3f>> objPoints;
 };
 
-#endif //ROS_WRAPPER_H
+#endif // ROS_WRAPPER_H

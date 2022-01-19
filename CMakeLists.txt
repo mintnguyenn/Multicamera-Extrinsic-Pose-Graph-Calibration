@@ -1,6 +1,16 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 project(multi_camera_calibration)
 
+find_package(PkgConfig)
+pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.5)
+
+find_package( yaml-cpp REQUIRED )
+
+if ( NOT yaml-cpp_FOUND )
+    message( FATAL_ERROR "Could NOT find yaml-cpp" )
+else ()
+    message(STATUS "***FOUND*** yaml-cpp in directory ${yaml-cpp_DIR}.")
+endif ()
 
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
@@ -53,7 +63,7 @@ add_executable(${PROJECT_NAME}_ex src/main.cpp src/ros_wrapper.cpp)
 add_dependencies(${PROJECT_NAME}_ex ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_ex ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${PROJECT_NAME}_my_library)
+target_link_libraries(${PROJECT_NAME}_ex ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${YAMLCPP_LIBRARIES} ${PROJECT_NAME}_my_library)
 
 
 #############
