@@ -1,31 +1,20 @@
+// roslaunch realsense2_camera rs_multiple_devices.launch serial_no_camera1:=801212071175 serial_no_camera2:=817612071347
+
 #include "ros_wrapper.h"
 
 RosWrapper::RosWrapper(ros::NodeHandle nh) : nh_(nh)
 {
 
-  sub_ = nh_.subscribe("camera/color/image_raw", 1000, &RosWrapper::imageCallback, this);
+  sub1_ = nh_.subscribe("camera/color/image_raw", 1000, &RosWrapper::camera1Callback, this);
 }
 
 RosWrapper::~RosWrapper() {}
 
-void RosWrapper::imageCallback(const sensor_msgs::ImageConstPtr &msg)
+void RosWrapper::camera1Callback(const sensor_msgs::ImageConstPtr &msg)
 {
-
-  std::unique_lock<std::mutex> lck(mtx_);
-  img_ = msg;
+  std::unique_lock<std::mutex> lck(mtx1_);
+  img1_ = msg;
   lck.unlock();
-
-  // try
-  // {
-  //   cv::imshow("view", cv_bridge::toCvShare(msg, "bgr8")->image);
-  //   cv::waitKey(30);
-  //   // cv::imwrite("image.jpg", cv_bridge::toCvShare(msg, "bgr8")->image);
-  // }
-  // catch (cv_bridge::Exception &e)
-
-  // {
-  //   ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
-  // }
 }
 
 bool Read_ArUco_YAML(const std::string &fileName, cv::Ptr<cv::aruco::Dictionary> dictionary,
@@ -57,8 +46,11 @@ bool Read_ArUco_YAML(const std::string &fileName, cv::Ptr<cv::aruco::Dictionary>
 
     for (unsigned i=0; i<objPoints.size(); i++){
       std::iter_swap(objPoints.at(i).begin(), objPoints.at(i).begin()+2);
+      if (i>27){
+        std::iter_swap(objPoints.at(i).begin(), objPoints.at(i).begin()+1);
+        std::iter_swap(objPoints.at(i).begin()+2, objPoints.at(i).begin()+3);
+      }
     }
-
   }
 
   if (config["ids"])
@@ -95,8 +87,8 @@ void RosWrapper::seperateThread()
   while (ros::ok())
   {
     sensor_msgs::ImageConstPtr img;
-    std::unique_lock<std::mutex> lck(mtx_);
-    img = img_;
+    std::unique_lock<std::mutex> lck(mtx1_);
+    img = img1_;
     lck.unlock();
 
     cv::Mat inputImage = cv_bridge::toCvShare(img, "bgr8")->image;

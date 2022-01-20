@@ -49,15 +49,17 @@ public:
     void seperateThread();
 
 private:
-    void imageCallback(const sensor_msgs::ImageConstPtr &msg);
+    void camera1Callback(const sensor_msgs::ImageConstPtr &msg);
+
+    void camera2Callback(const sensor_msgs::ImageConstPtr &msg);
 
 private:
     ros::NodeHandle nh_;
-    ros::Subscriber sub_;
+    ros::Subscriber sub1_, sub2_;
 
-    sensor_msgs::ImageConstPtr img_;
+    sensor_msgs::ImageConstPtr img1_, img2_;
 
-    std::mutex mtx_;
+    std::mutex mtx1_, mtx2;
 
     cv::Ptr<cv::aruco::Dictionary> dictionary;
     std::vector<int> ids;
