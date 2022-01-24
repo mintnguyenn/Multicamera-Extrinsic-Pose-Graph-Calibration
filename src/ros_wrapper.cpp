@@ -44,12 +44,10 @@ bool Read_ArUco_YAML(const std::string &fileName, cv::Ptr<cv::aruco::Dictionary>
     }
     objPoints = markerConers;
 
-    for (unsigned i=0; i<objPoints.size(); i++){
-      std::iter_swap(objPoints.at(i).begin(), objPoints.at(i).begin()+2);
-      if (i>27){
-        std::iter_swap(objPoints.at(i).begin(), objPoints.at(i).begin()+1);
-        std::iter_swap(objPoints.at(i).begin()+2, objPoints.at(i).begin()+3);
-      }
+    for (unsigned i = 28; i < objPoints.size(); i++)
+    {
+      std::iter_swap(objPoints.at(i).begin(), objPoints.at(i).begin() + 1);
+      std::iter_swap(objPoints.at(i).begin() + 2, objPoints.at(i).begin() + 3);
     }
   }
 
@@ -72,17 +70,17 @@ void RosWrapper::seperateThread()
   cameraMatrix.at<float>(1, 2) = 363.7060852050781;
   cameraMatrix.at<float>(2, 2) = 1;
 
-  const std::string fileName = "/home/mintnguyen/Documents/multi-cameras-calibration/aruco_yaml/aruco-board-markers.yaml";
+  const std::string fileName = "/home/mintnguyen/Documents/multi-cameras-calibration/aruco-board-markers.yaml";
   Read_ArUco_YAML(fileName, dictionary, ids, objPoints);
 
-  for (auto element : objPoints)
-  {
-    for (auto e : element)
-    {
-      std::cout << e << " ";
-    }
-    std::cout << std::endl;
-  }
+  // for (auto element : objPoints)
+  // {
+  //   for (auto e : element)
+  //   {
+  //     std::cout << e << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
 
   while (ros::ok())
   {
@@ -100,18 +98,17 @@ void RosWrapper::seperateThread()
     cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
     cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_100);
     cv::Ptr<cv::aruco::GridBoard> board = cv::aruco::GridBoard::create(7, 4, 0.04, 0.02, dictionary);
-    cv::Ptr<cv::aruco::Board> board2 = cv::aruco::Board::create(objPoints,dictionary,ids);
-cv::Ptr<cv::aruco::GridBoard> board3 = cv::aruco::GridBoard::create(2, 2, 0.1, 0.2, dictionary);
-    for (unsigned int i = 0; i < 28; i++)
-    {
+    cv::Ptr<cv::aruco::Board> board2 = cv::aruco::Board::create(objPoints, dictionary, ids);
 
-      std::cout << "ID: " << i << std::endl;
-      std::cout << std::setprecision(2) << board->objPoints.at(i) << std::endl;
-      std:: cout << "---" << std::endl;
-      std::cout << std::setprecision(2) << board2->objPoints.at(i) << std::endl;
+    // for (unsigned int i = 0; i < 28; i++)
+    // {
+    //   std::cout << "ID: " << i << std::endl;
+    //   std::cout << std::setprecision(2) << board->objPoints.at(i) << std::endl;
+    //   std:: cout << "---" << std::endl;
+    //   std::cout << std::setprecision(2) << board2->objPoints.at(i) << std::endl;
+    //   std::cout << std::endl;
+    // }
 
-      std::cout << std::endl;
-    }
     cv::aruco::detectMarkers(inputImage, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
 
     cv::Mat outputImage = inputImage.clone();
@@ -126,20 +123,6 @@ cv::Ptr<cv::aruco::GridBoard> board3 = cv::aruco::GridBoard::create(2, 2, 0.1, 0
       int valid = cv::aruco::estimatePoseBoard(markerCorners, markerIds, board2, cameraMatrix, distCoeffs, rvec, tvec);
       if (valid > 0)
         cv::aruco::drawAxis(outputImage, cameraMatrix, distCoeffs, rvec, tvec, 0.1);
-
-      // for (auto pt : markerCorners){
-      //   std::cout << pt.size() << std::endl;
-      // }
-      // std::cout << std::endl;
-      // std::cout << rvec << "; " << tvec << std::endl;
-      // std::vector<cv::Vec3d> rvecs, tvecs;
-      // cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.04, cameraMatrix, distCoeffs, rvecs, tvecs);
-      // for (int i = 0; i < rvecs.size(); ++i)
-      // {
-      //   auto rvec = rvecs[i];
-      //   auto tvec = tvecs[i];
-      //   cv::aruco::drawAxis(outputImage, cameraMatrix, distCoeffs, rvec, tvec, 0.01);
-      // }
     }
 
     cv::imshow("view", outputImage);
