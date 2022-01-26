@@ -2,6 +2,7 @@
 #define ROS_WRAPPER_H
 
 #include "ros/ros.h"
+#include "calibration.h"
 
 #include <sstream>
 #include <iostream>
@@ -19,9 +20,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/aruco.hpp>
 #include <opencv2/aruco/dictionary.hpp>
-
-#include <yaml-cpp/yaml.h>
-#include <unistd.h>
+#include <opencv2/calib3d.hpp>
 
 //! The class we have developed included here in our node
 
@@ -33,7 +32,7 @@ public:
      *
      *  Will take the node handle and initialise the callbacks and internal variables
      */
-    RosWrapper(ros::NodeHandle nh);
+    RosWrapper(ros::NodeHandle nh, std::shared_ptr<ExtrinsicCalibrationInterface> calibPtr);
 
     /*! @brief RosWrapper destructor.
      *
@@ -53,9 +52,13 @@ private:
 
     void camera2Callback(const sensor_msgs::ImageConstPtr &msg);
 
+    void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+
 private:
     ros::NodeHandle nh_;
     ros::Subscriber sub1_, sub2_;
+
+    std::shared_ptr<ExtrinsicCalibrationInterface> calibPtr_;
 
     sensor_msgs::ImageConstPtr img1_, img2_;
 
@@ -64,6 +67,12 @@ private:
     cv::Ptr<cv::aruco::Dictionary> dictionary;
     std::vector<int> ids;
     std::vector<std::vector<cv::Point3f>> objPoints;
+    std::vector<std::vector<cv::Point2f>> imgPoints;
+
+    cv::Mat camera_matrix_1_;
+    std::mutex camera_matrix_1_mtx_;
+
+    bool flag_1 = false;
 };
 
 #endif // ROS_WRAPPER_H
