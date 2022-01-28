@@ -20,7 +20,7 @@ public:
     */
     void runThreads();
 
-    void thread();
+    void extrinsicCalibration();
 
 private:
     int mode_;

@@ -45,7 +45,7 @@ public:
     */
     virtual void runThreads() = 0;
 
-    virtual void thread() = 0;
+    virtual void extrinsicCalibration() = 0;
 };
 
 #endif // CALIBRATION_INTERFACE_H

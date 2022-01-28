@@ -40,15 +40,10 @@ public:
      */
     ~RosWrapper();
 
-    /*! @brief seperate thread.
-     *
-     *  The main processing thread that will run continously and utilise the data
-     *  When data needs to be combined then running a thread seperate to callback will gurantee data is processed
-     */
-    void seperateThread();
+    void setCamera(std::vector<std::shared_ptr<ExtrinsicCalibrationInterface>> camPtr);
 
 private:
-    void camera1Callback(const sensor_msgs::ImageConstPtr &msg);
+    void cameraImageCallback(const sensor_msgs::ImageConstPtr &msg);
 
     void camera2Callback(const sensor_msgs::ImageConstPtr &msg);
 
@@ -59,18 +54,7 @@ private:
     ros::Subscriber sub1_, sub2_;
 
     std::shared_ptr<ExtrinsicCalibrationInterface> calibPtr_;
-
-    sensor_msgs::ImageConstPtr img1_, img2_;
-
-    std::mutex mtx1_, mtx2;
-
-    cv::Ptr<cv::aruco::Dictionary> dictionary;
-    std::vector<int> ids;
-    std::vector<std::vector<cv::Point3f>> objPoints;
-    std::vector<std::vector<cv::Point2f>> imgPoints;
-
-    cv::Mat camera_matrix_1_;
-    std::mutex camera_matrix_1_mtx_;
+    std::vector<std::shared_ptr<ExtrinsicCalibrationInterface>> cameras_;
 
     bool flag_1 = false;
 };

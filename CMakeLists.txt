@@ -4,7 +4,7 @@ project(multi_camera_calibration)
 find_package(PkgConfig)
 pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.5)
 
-find_package( yaml-cpp REQUIRED )
+find_package(yaml-cpp REQUIRED)
 
 if ( NOT yaml-cpp_FOUND )
     message( FATAL_ERROR "Could NOT find yaml-cpp" )
