@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "ros_wrapper.h"
+#include "camera.h"
 #include "calibration.h"
 
 int main(int argc, char **argv)
@@ -9,13 +10,17 @@ int main(int argc, char **argv)
 
   ros::NodeHandle nh;
 
-  std::shared_ptr<ExtrinsicCalibrationInterface> calibPtr(new ExtrinsicCalibration());
-  std::vector<std::shared_ptr<ExtrinsicCalibrationInterface>> cameras;
-  for (unsigned int i = 0; i < 1; i++)
+  std::shared_ptr<CameraInterface> cam1(new Camera("view1"));
+  std::shared_ptr<CameraInterface> cam2(new Camera("view2"));
+  std::vector<std::shared_ptr<CameraInterface>> cameras;
+  unsigned int camera_number = 2;
+  for (unsigned int i = 0; i < camera_number; i++)
   {
-    // cameras.push_back(std::make_shared<ExtrinsicCalibrationInterface>(new ExtrinsicCalibration()));
+    std::shared_ptr<CameraInterface> cam1(new Camera("view1"));
+    cameras.push_back(cam1);
   }
-  std::shared_ptr<RosWrapper> rosPtr(new RosWrapper(nh, calibPtr));
+  std::shared_ptr<RosWrapper> rosPtr(new RosWrapper(nh, cameras));
+  std::shared_ptr<ExtrinsicCalibrationInterface> ptr(new ExtrinsicCalibration(cameras));
 
   ros::spin();
 

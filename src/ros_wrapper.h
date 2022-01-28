@@ -2,7 +2,7 @@
 #define ROS_WRAPPER_H
 
 #include "ros/ros.h"
-#include "calibration.h"
+#include "camera.h"
 
 #include <sstream>
 #include <iostream>
@@ -32,7 +32,7 @@ public:
      *
      *  Will take the node handle and initialise the callbacks and internal variables
      */
-    RosWrapper(ros::NodeHandle nh, std::shared_ptr<ExtrinsicCalibrationInterface> calibPtr);
+    RosWrapper(ros::NodeHandle nh, std::vector<std::shared_ptr<CameraInterface>> cameras);
 
     /*! @brief RosWrapper destructor.
      *
@@ -40,23 +40,26 @@ public:
      */
     ~RosWrapper();
 
-    void setCamera(std::vector<std::shared_ptr<ExtrinsicCalibrationInterface>> camPtr);
+    void setCamera(std::vector<std::shared_ptr<CameraInterface>> camPtr);
 
 private:
-    void cameraImageCallback(const sensor_msgs::ImageConstPtr &msg);
+    void camera1ImageCallback(const sensor_msgs::ImageConstPtr &msg);
 
-    void camera2Callback(const sensor_msgs::ImageConstPtr &msg);
+    void camera2ImageCallback(const sensor_msgs::ImageConstPtr &msg);
 
-    void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+    void camera1InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+
+    void camera2InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
 
 private:
     ros::NodeHandle nh_;
-    ros::Subscriber sub1_, sub2_;
+    ros::Subscriber sub1_, sub2_, sub3_, sub4_;
 
-    std::shared_ptr<ExtrinsicCalibrationInterface> calibPtr_;
-    std::vector<std::shared_ptr<ExtrinsicCalibrationInterface>> cameras_;
+    std::shared_ptr<CameraInterface> cam1_, cam2_;
+    std::vector<std::shared_ptr<CameraInterface>> cameras_;
 
     bool flag_1 = false;
+    bool flag_2 = false;
 };
 
 #endif // ROS_WRAPPER_H

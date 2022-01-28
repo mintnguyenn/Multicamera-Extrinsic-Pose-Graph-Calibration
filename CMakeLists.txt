@@ -49,14 +49,14 @@ include_directories(
 ## Libraries ##
 ###############
 ## Declare C++ libraries here
-add_library(${PROJECT_NAME}_my_library src/ros_wrapper.cpp src/calibration.cpp)
+add_library(${PROJECT_NAME}_my_library src/ros_wrapper.cpp src/calibration.cpp src/camera.cpp)
 
 
 ###############
 ## Executable ##
 ###############
 ## Declare C++ executable
-add_executable(${PROJECT_NAME} src/main.cpp src/ros_wrapper.cpp src/calibration.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/ros_wrapper.cpp src/calibration.cpp src/camera.cpp)
 
 ## Add cmake target dependencies of the executable, enforces generating messages
 ## VERY VERY VERY HIGHLY unlikely to change
