@@ -13,7 +13,7 @@ int main(int argc, char **argv)
   std::shared_ptr<CameraInterface> cam1(new Camera("view1"));
   std::shared_ptr<CameraInterface> cam2(new Camera("view2"));
   std::vector<std::shared_ptr<CameraInterface>> cameras;
-  unsigned int camera_number = 2;
+  unsigned int camera_number = 1;
   for (unsigned int i = 0; i < camera_number; i++)
   {
     std::shared_ptr<CameraInterface> cam1(new Camera("view1"));

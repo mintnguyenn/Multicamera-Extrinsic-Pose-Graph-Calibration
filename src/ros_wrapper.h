@@ -53,13 +53,13 @@ private:
 
 private:
     ros::NodeHandle nh_;
-    ros::Subscriber sub1_, sub2_, sub3_, sub4_;
+    ros::Subscriber sub1_, sub2_, sub3_, sub4_; // Subscribers
 
     std::shared_ptr<CameraInterface> cam1_, cam2_;
     std::vector<std::shared_ptr<CameraInterface>> cameras_;
 
-    bool flag_1 = false;
-    bool flag_2 = false;
+    bool flag_1 = false; // Use this flag to allow get intrinsic from /camera_info once
+    bool flag_2 = false; // Use this flag to allow get intrinsic from /camera_info once
 };
 
 #endif // ROS_WRAPPER_H
