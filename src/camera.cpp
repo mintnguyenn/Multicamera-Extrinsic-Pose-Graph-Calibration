@@ -1,32 +1,14 @@
 #include "camera.h"
 
-cv::Mat eulerAnglesToRotationMatrix(cv::Vec3d &rvec, cv::Vec3d &tvec)
+cv::Mat rvectvecToTransformation(cv::Vec3d &rvec, cv::Vec3d &tvec)
 {
-  // Calculate rotation about x axis
-  // cv::Mat R_x = (cv::Mat_<double>(3, 3) << 1, 0, 0,
-  //                0, cos(rvec[0]), -sin(rvec[0]),
-  //                0, sin(rvec[0]), cos(rvec[0]));
-
-  // // Calculate rotation about y axis
-  // cv::Mat R_y = (cv::Mat_<double>(3, 3) << cos(rvec[1]), 0, sin(rvec[1]),
-  //                0, 1, 0,
-  //                -sin(rvec[1]), 0, cos(rvec[1]));
-
-  // // Calculate rotation about z axis
-  // cv::Mat R_z = (cv::Mat_<double>(3, 3) << cos(rvec[2]), -sin(rvec[2]), 0,
-  //                sin(rvec[2]), cos(rvec[2]), 0,
-  //                0, 0, 1);
-
-  // // Combined rotation matrix
-  // cv::Mat R = R_x * R_y * R_z;
-
   cv::Mat R;
   cv::Rodrigues(rvec, R);
 
   cv::Mat tf = (cv::Mat_<double>(4,4) << R.at<double>(0,0), R.at<double>(0,1), R.at<double>(0,2), tvec[0],
-                                 R.at<double>(1,0), R.at<double>(1,1), R.at<double>(1,2), tvec[1],
-                                 R.at<double>(2,0), R.at<double>(2,1), R.at<double>(2,2), tvec[2],
-                                 0, 0, 0, 1);
+                                         R.at<double>(1,0), R.at<double>(1,1), R.at<double>(1,2), tvec[1],
+                                         R.at<double>(2,0), R.at<double>(2,1), R.at<double>(2,2), tvec[2],
+                                         0, 0, 0, 1);
 
   return tf;
 }
@@ -154,12 +136,10 @@ void Camera::extrinsicCalibration()
         cv::aruco::drawAxis(output_image, instrinsic, distCoeffs, rvec, tvec, 0.1);
       }
 
-      cv::Mat rotation_matrix = eulerAnglesToRotationMatrix(rvec, tvec); // Convert roll-pitch-yaw to rotation matrix (3x3)
-      // std::cout << rotation_matrix << std::endl;
-      cv::Mat extrinsic = cv::Mat::zeros(4, 4, CV_32F); // Homogeneous, combine rotation and translation
+      cv::Mat tf = rvectvecToTransformation(rvec, tvec); // Transformation homogeneous, combine rotation and translation
 
       std::unique_lock<std::mutex> lck3(tf_mtx_);
-      tf_ = rotation_matrix; // Save to member variable tf
+      tf_ = tf; // Save to member variable tf
       lck3.unlock();
 
       // cv::imshow(name_, output_image);
