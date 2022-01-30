@@ -15,12 +15,28 @@ ExtrinsicCalibration::~ExtrinsicCalibration()
 
 void ExtrinsicCalibration::threads()
 {
+    std::vector<cv::Mat> tf_vec;
     while (running_)
     {
-        for (auto e : cameras_){
-            std::cout << e->getTransformationMatrix() << std::endl;
+        tf_vec.clear();
+        for (auto e : cameras_)
+        {
+            tf_vec.push_back(e->getTransformationMatrix());
         }
-        std::cout << std::endl;
+
+        cv::Mat extrinsic = cv::Mat::zeros(4, 4, CV_32F);
+        if (tf_vec.size() > 1)
+        {
+            cv::Mat tf1 = tf_vec.at(0);
+            cv::Mat tf2;
+            if (!tf_vec.at(0).empty() && !tf_vec.at(1).empty())
+            {
+                cv::invert(tf_vec.at(1), tf2);
+                extrinsic = tf1 * tf2;
+            }
+        }
+
+        std::cout << extrinsic << std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
