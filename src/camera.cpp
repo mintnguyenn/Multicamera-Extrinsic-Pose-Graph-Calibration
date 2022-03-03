@@ -2,23 +2,23 @@
 
 cv::Mat rvectvecToTransformation(cv::Vec3d &rvec, cv::Vec3d &tvec)
 {
-  cv::Mat R;
-  cv::Rodrigues(rvec, R);
+  cv::Mat R;              // Rotation matrix
+  cv::Rodrigues(rvec, R); // Convert rvec (1x3) to rotation matrix (3x3)
 
-  cv::Mat tf = (cv::Mat_<double>(4,4) << R.at<double>(0,0), R.at<double>(0,1), R.at<double>(0,2), tvec[0],
-                                         R.at<double>(1,0), R.at<double>(1,1), R.at<double>(1,2), tvec[1],
-                                         R.at<double>(2,0), R.at<double>(2,1), R.at<double>(2,2), tvec[2],
-                                         0, 0, 0, 1);
+  cv::Mat tf = (cv::Mat_<double>(4, 4) << R.at<double>(0, 0), R.at<double>(0, 1), R.at<double>(0, 2), tvec[0],
+                R.at<double>(1, 0), R.at<double>(1, 1), R.at<double>(1, 2), tvec[1],
+                R.at<double>(2, 0), R.at<double>(2, 1), R.at<double>(2, 2), tvec[2],
+                0, 0, 0, 1);
 
   return tf;
 }
 
-Camera::Camera(std::string name)
+Camera::Camera(std::string name, bool show)
 {
+  show_ = show;
   name_ = name;
   const std::string fileName = "/home/mintnguyen/Documents/multi-cameras-calibration/aruco-board-markers.yaml";
   Read_ArUco_YAML(fileName, board_config_.dictionary, board_config_.ids, board_config_.objPoints);
-
   runThreads();
 }
 
@@ -142,8 +142,11 @@ void Camera::extrinsicCalibration()
       tf_ = tf; // Save to member variable tf
       lck3.unlock();
 
-      // cv::imshow(name_, output_image);
-      // cv::waitKey(30);
+      if (show_)
+      {
+        cv::imshow(name_, output_image);
+        cv::waitKey(30);
+      }
     }
 
     if (!running_)

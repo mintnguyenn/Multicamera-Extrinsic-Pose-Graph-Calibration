@@ -5,7 +5,9 @@
 
 class Camera : public CameraInterface {
 public:
-    Camera(std::string name); // Default constructor
+    Camera();
+    
+    Camera(std::string message, bool show); // Default constructor
     ~Camera();
 
     void setCameraMatrix(cv::Mat camera_matrix);
@@ -27,6 +29,7 @@ public:
 private:
     int mode_;
     std::string name_;
+    bool show_;
 
     BoardConfiguration board_config_;
 

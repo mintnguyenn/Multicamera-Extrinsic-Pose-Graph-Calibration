@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   roscpp
   sensor_msgs
+  image_transport
   rosbag # Needed for rosbag manipulation
   roslib # Needed for ros::package::getPath
 )
@@ -49,14 +50,14 @@ include_directories(
 ## Libraries ##
 ###############
 ## Declare C++ libraries here
-add_library(${PROJECT_NAME}_my_library src/ros_wrapper.cpp src/calibration.cpp src/camera.cpp)
+add_library(${PROJECT_NAME}_my_library src/camera_wrapper.cpp src/calibration.cpp src/camera.cpp)
 
 
 ###############
 ## Executable ##
 ###############
 ## Declare C++ executable
-add_executable(${PROJECT_NAME} src/main.cpp src/ros_wrapper.cpp src/calibration.cpp src/camera.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/camera_wrapper.cpp src/calibration.cpp src/camera.cpp)
 
 ## Add cmake target dependencies of the executable, enforces generating messages
 ## VERY VERY VERY HIGHLY unlikely to change
