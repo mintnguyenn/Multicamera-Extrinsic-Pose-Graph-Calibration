@@ -12,6 +12,7 @@
 
 ## To-Do
 
+- Change git repo name to "multi-camera_extrinsic_pose_graph_calibration"
 - Move the Read_ArUco_Yaml to separate file
 - add the block diagram to readme
 - Synchronisation of camera 7 due to hardware sync. Detect camera 7 images to find the consecutive images of the other cameras. (When camera 7 triggers, the other cameras will trigger)
