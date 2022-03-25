@@ -1,6 +1,7 @@
 #include "camera.h"
+#include "read_yaml.cpp"
 
-cv::Mat rvectvecToTransformation(cv::Vec3d &rvec, cv::Vec3d &tvec)
+cv::Mat rvectvecToTransformationMatrix(cv::Vec3d &rvec, cv::Vec3d &tvec)
 {
   cv::Mat R;              // Rotation matrix
   cv::Rodrigues(rvec, R); // Convert rvec (1x3) to rotation matrix (3x3)
@@ -13,10 +14,8 @@ cv::Mat rvectvecToTransformation(cv::Vec3d &rvec, cv::Vec3d &tvec)
   return tf;
 }
 
-Camera::Camera(std::string name, bool show)
+Camera::Camera(bool show, unsigned int index) : show_(show), index_(index)
 {
-  show_ = show;
-  name_ = name;
   const std::string fileName = "/home/mintnguyen/Documents/multi-cameras-calibration/aruco-board-markers.yaml";
   Read_ArUco_YAML(fileName, board_config_.dictionary, board_config_.ids, board_config_.objPoints);
   runThreads();
@@ -35,59 +34,18 @@ void Camera::runThreads(void)
   threads_.push_back(std::thread(&CameraInterface::extrinsicCalibration, this)); // Create the thread and push it to our vector of threads
 }
 
-// Read ArUco board configuration in a yaml file
-bool Camera::Read_ArUco_YAML(const std::string &fileName, cv::Ptr<cv::aruco::Dictionary> &dictionary,
-                             std::vector<int> &ids, std::vector<std::vector<cv::Point3f>> &objPoints)
-{
-  // Default dictionary (not using any others)
-  dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_100);
-
-  YAML::Node config = YAML::LoadFile(fileName);
-
-  std::vector<std::vector<cv::Point3f>> markerConers;
-  if (config["objPoints"])
-  {
-    std::vector<std::vector<double>> objPointss = config["objPoints"].as<std::vector<std::vector<double>>>();
-    markerConers.resize(objPointss.size());
-    for (unsigned int i = 0; i < objPointss.size(); i++)
-    {
-      if (!objPointss.empty())
-        for (unsigned int j = 0; j < objPointss.at(i).size(); j += 3)
-        {
-          cv::Point3f point;
-          point.x = objPointss.at(i).at(j);
-          point.y = objPointss.at(i).at(j + 1);
-          point.z = objPointss.at(i).at(j + 2);
-          markerConers.at(i).push_back(point);
-        }
-    }
-    objPoints = markerConers;
-
-    for (unsigned i = 28; i < objPoints.size(); i++)
-    {
-      std::iter_swap(objPoints.at(i).begin(), objPoints.at(i).begin() + 1);
-      std::iter_swap(objPoints.at(i).begin() + 2, objPoints.at(i).begin() + 3);
-    }
-  }
-
-  if (config["ids"])
-    ids = config["ids"].as<std::vector<int>>();
-
-  return true;
-}
-
 // Set camera matrix (instrinsic) for the camera
 void Camera::setCameraMatrix(cv::Mat camera_matrix)
 {
-  std::unique_lock<std::mutex> lck(camera1_.i_mtx);
-  camera1_.instrinsic = camera_matrix;
+  std::unique_lock<std::mutex> lck(camera_.i_mtx);
+  camera_.instrinsic = camera_matrix;
 }
 
 // Set image
 void Camera::setCameraImage(cv::Mat input_image)
 {
-  std::unique_lock<std::mutex> lck(camera1_.img_mtx);
-  camera1_.image = input_image;
+  std::unique_lock<std::mutex> lck(camera_.img_mtx);
+  camera_.image = input_image;
 }
 
 cv::Mat Camera::getTransformationMatrix()
@@ -103,12 +61,12 @@ void Camera::extrinsicCalibration()
 {
   while (running_)
   {
-    std::unique_lock<std::mutex> lck1(camera1_.img_mtx);
-    cv::Mat input_image = camera1_.image; // Create a copy of image matrix
+    std::unique_lock<std::mutex> lck1(camera_.img_mtx);
+    cv::Mat input_image = camera_.image; // Create a copy of image matrix
     lck1.unlock();
 
-    std::unique_lock<std::mutex> lck2(camera1_.i_mtx);
-    cv::Mat instrinsic = camera1_.instrinsic; // Create a copy of camera matrix
+    std::unique_lock<std::mutex> lck2(camera_.i_mtx);
+    cv::Mat instrinsic = camera_.instrinsic; // Create a copy of camera matrix
     lck2.unlock();
 
     if (!input_image.empty() && !instrinsic.empty())
@@ -136,7 +94,9 @@ void Camera::extrinsicCalibration()
         cv::aruco::drawAxis(output_image, instrinsic, distCoeffs, rvec, tvec, 0.1);
       }
 
-      cv::Mat tf = rvectvecToTransformation(rvec, tvec); // Transformation homogeneous, combine rotation and translation
+      cv::Mat tf = rvectvecToTransformationMatrix(rvec, tvec); // Transformation homogeneous, combine rotation and translation
+
+      std::cout << "Camera " << index_ << ": " << tf << std::endl;
 
       std::unique_lock<std::mutex> lck3(tf_mtx_);
       tf_ = tf; // Save to member variable tf
@@ -144,8 +104,9 @@ void Camera::extrinsicCalibration()
 
       if (show_)
       {
-        cv::imshow(name_, output_image);
-        cv::waitKey(30);
+        std::string name = std::to_string(index_);
+        cv::imshow(name, output_image);
+        cv::waitKey(10);
       }
     }
 

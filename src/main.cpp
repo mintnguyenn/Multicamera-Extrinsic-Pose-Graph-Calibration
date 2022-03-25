@@ -3,17 +3,23 @@
 #include "camera.h"
 #include "calibration.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
+
+  // XInitThreads();
 
   ros::init(argc, argv, "camera_calibration");
 
   ros::NodeHandle nh;
 
-  std::shared_ptr<CameraInterface> cam15(new Camera("view1", true));
-  std::shared_ptr<CameraWrapper> rosPtr(new CameraWrapper(nh, cam15, 17));
-  // std::shared_ptr<ExtrinsicCalibrationInterface> ptr(new ExtrinsicCalibration(cameras));
+  std::vector<std::shared_ptr<CameraInterface>> cameras;
 
+  // for (unsigned int i = 15; i < 17; i++){
+    std::shared_ptr<CameraWrapper> camera7(new CameraWrapper(nh, 7));
+    // std::shared_ptr<CameraWrapper> camera8(new CameraWrapper(nh, 8));
+    // cameras.push_back(camera);
+  // }
+  
+  // std::shared_ptr<ExtrinsicCalibrationInterface> ptr(new ExtrinsicCalibration(cameras));
   ros::spin();
 
   /**

@@ -13,6 +13,13 @@ ExtrinsicCalibration::~ExtrinsicCalibration()
         t.join(); // Join threads
 }
 
+cv::Mat calculateTransform(cv::Mat tf_1, cv::Mat tf_2){ //(2) respected to (1)
+    cv::Mat tf_inv;
+    cv::invert(tf_1, tf_inv);
+
+    return tf_2 * tf_inv;
+}
+
 void ExtrinsicCalibration::threads()
 {
     std::vector<cv::Mat> tf_vec;
