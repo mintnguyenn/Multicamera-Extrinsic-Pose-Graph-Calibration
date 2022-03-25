@@ -1,4 +1,4 @@
-# multi-camera_extrinsic_pose_graph_calibration
+# Multi-cameras extrinsic pose graph calibration
 
 *ADD DESCRIPTION*
 
