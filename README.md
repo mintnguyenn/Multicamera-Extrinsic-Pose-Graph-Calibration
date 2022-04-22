@@ -2,6 +2,16 @@
 
 *ADD DESCRIPTION*
 
+## Nodes and Edges CSV files
+
+- We first want to run the g2o optimisation in MATLAB by creating a .g2o file. We need to create 2 CSV files that contains information of the nodes and edges. 
+- The nodes are the pose of each camera w.r.t to the origin camera (camera 7) and the pose of each board at each time-step w.r.t to the origin camera. 
+- The edges are the pose estimation of each board at each time-step w.r.t the relevant camera using the aruco board. The `origin node` must be a camera and the `target node` should be a board pose at a single time-step.
+- You will need to convert the rotation to Quaternion angles
+- More information can be found in the file `nodes_edges_format.ods` (LibreOffice file)
+
+
+
 
 
 ## Completed
