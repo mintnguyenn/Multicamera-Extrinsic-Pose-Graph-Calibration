@@ -2,24 +2,21 @@ cmake_minimum_required(VERSION 3.10)
 project(multi_camera_calibration)
 
 find_package(PkgConfig)
-pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.5)
+pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.6)
 
 find_package(yaml-cpp REQUIRED)
 
-if ( NOT yaml-cpp_FOUND )
-    message( FATAL_ERROR "Could NOT find yaml-cpp" )
+if (NOT yaml-cpp_FOUND)
+    message(FATAL_ERROR "Could NOT find yaml-cpp")
 else ()
     message(STATUS "***FOUND*** yaml-cpp in directory ${yaml-cpp_DIR}.")
 endif ()
 
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
-  roscpp
-  sensor_msgs
   image_transport
-  rosbag # Needed for rosbag manipulation
-  roslib # Needed for ros::package::getPath
 )
+
 find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
@@ -27,7 +24,7 @@ find_package(Eigen3 REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wdeprecated-declarations")
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
-message ( STATUS " CMake C++ FLAGS ${CMAKE_CXX_FLAGS}")
+message (STATUS "CMake C++ FLAGS ${CMAKE_CXX_FLAGS}")
 
 ## We tell then system we have a catkin_package, no dependencies going forward
 catkin_package()
@@ -50,13 +47,13 @@ include_directories(
 ## Libraries ##
 ###############
 ## Declare C++ libraries here
-add_library(${PROJECT_NAME}_my_library src/camera_wrapper.cpp src/calibration.cpp src/camera.cpp)
+add_library(${PROJECT_NAME}_my_library src/camera_wrapper.cpp src/wrapper.cpp src/camera.cpp src/yaml_reader.cpp)
 
 ###############
 ## Executable ##
 ###############
 ## Declare C++ executable
-add_executable(${PROJECT_NAME} src/main.cpp src/camera_wrapper.cpp src/calibration.cpp src/camera.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/camera_wrapper.cpp src/wrapper.cpp src/yaml_reader.cpp)
 
 ## Add cmake target dependencies of the executable, enforces generating messages
 ## VERY VERY VERY HIGHLY unlikely to change

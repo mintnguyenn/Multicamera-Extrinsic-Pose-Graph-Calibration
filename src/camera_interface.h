@@ -2,16 +2,16 @@
 #define CAMERA_INTERFACE_H
 
 #include <iostream>
-
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include <chrono>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/aruco.hpp>
-#include <opencv2/aruco/dictionary.hpp>
+// #include <opencv2/aruco/dictionary.hpp>
 #include <opencv2/calib3d.hpp>
+
+#include "yaml_reader.h"
 
 struct BoardConfiguration{
     std::vector<std::vector<cv::Point3f>> objPoints;
@@ -40,6 +40,8 @@ public:
     virtual void runThreads() = 0;
 
     virtual void extrinsicCalibration() = 0;
+
+    virtual cv::Mat boardDetection(cv::Mat image, cv::Mat intrinsic) = 0;
 
     virtual cv::Mat getTransformationMatrix() = 0;
 };

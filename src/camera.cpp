@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "read_yaml.cpp"
 
 cv::Mat rvectvecToTransformationMatrix(cv::Vec3d &rvec, cv::Vec3d &tvec)
 {
@@ -16,8 +15,12 @@ cv::Mat rvectvecToTransformationMatrix(cv::Vec3d &rvec, cv::Vec3d &tvec)
 
 Camera::Camera(bool show, unsigned int index) : show_(show), index_(index)
 {
-  const std::string fileName = "/home/mintnguyen/Documents/multi-cameras-calibration/aruco-board-markers.yaml";
-  Read_ArUco_YAML(fileName, board_config_.dictionary, board_config_.ids, board_config_.objPoints);
+  const std::string aruco_board_markers = "/home/mintnguyen/Documents/multi-cameras-calibration/yaml/aruco-board-markers.yaml";
+  yaml::Read_ArUco(aruco_board_markers, board_config_.dictionary, board_config_.ids, board_config_.objPoints);
+
+  const std::string fileName = "/home/mintnguyen/Documents/multi-cameras-calibration/yaml/camera_info.yaml";
+  std::vector<cv::Mat> camera_info_vec = yaml::Read_Intrinsic(fileName);
+
   runThreads();
 }
 
@@ -46,6 +49,9 @@ void Camera::setCameraImage(cv::Mat input_image)
 {
   std::unique_lock<std::mutex> lck(camera_.img_mtx);
   camera_.image = input_image;
+
+  ready_ = true;
+  // cv_.notify_all();
 }
 
 cv::Mat Camera::getTransformationMatrix()
@@ -57,10 +63,41 @@ cv::Mat Camera::getTransformationMatrix()
   return tf;
 }
 
+cv::Mat Camera::boardDetection(cv::Mat image, cv::Mat intrinsic){
+  if (!image.empty() && !intrinsic.empty()){
+
+    cv::Mat distCoeffs;
+    // Marker detection
+    std::vector<int> markerIds; // Create a vector contains marker id
+    std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
+    cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
+    cv::Ptr<cv::aruco::Board> board = cv::aruco::Board::create(board_config_.objPoints, board_config_.dictionary, board_config_.ids);
+    cv::aruco::detectMarkers(image, board_config_.dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
+
+    std::vector<cv::Point3f> objPoints;
+    std::vector<cv::Point2f> imgPoints;
+    cv::aruco::getBoardObjectAndImagePoints(board, markerCorners, markerIds, objPoints, imgPoints);
+    cv::Vec3d rvec, tvec;
+    if (!objPoints.empty() && !imgPoints.empty())
+      cv::solvePnP(objPoints, imgPoints, intrinsic, distCoeffs, rvec, tvec, false, cv::SOLVEPNP_ITERATIVE);
+
+    cv::Mat tf = rvectvecToTransformationMatrix(rvec, tvec); // Transformation homogeneous, combine rotation and translation
+
+    return tf;
+  }
+  else {
+    cv::Mat m1 = cv::Mat(1,1, CV_64F, 0);
+    m1 = cv::Mat::zeros(1, 1, CV_64F);
+    return m1;
+  };
+}
+
 void Camera::extrinsicCalibration()
 {
   while (running_)
   {
+    // while (!ready_) cv_.wait();
+
     std::unique_lock<std::mutex> lck1(camera_.img_mtx);
     cv::Mat input_image = camera_.image; // Create a copy of image matrix
     lck1.unlock();
@@ -96,7 +133,8 @@ void Camera::extrinsicCalibration()
 
       cv::Mat tf = rvectvecToTransformationMatrix(rvec, tvec); // Transformation homogeneous, combine rotation and translation
 
-      std::cout << "Camera " << index_ << ": " << tf << std::endl;
+      // if (show_)
+      //   std::cout << "Camera " << index_ << ": " << tf << std::endl;
 
       std::unique_lock<std::mutex> lck3(tf_mtx_);
       tf_ = tf; // Save to member variable tf
@@ -109,6 +147,7 @@ void Camera::extrinsicCalibration()
         cv::waitKey(10);
       }
     }
+    ready_ = false;
 
     if (!running_)
       break;

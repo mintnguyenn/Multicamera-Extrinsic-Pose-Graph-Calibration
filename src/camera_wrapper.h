@@ -49,6 +49,7 @@ private:
     std::shared_ptr<CameraInterface> cam_;
 
     bool flag = false; // Use this flag to allow get intrinsic from /camera_info once
+    int camera_index_;
 };
 
 #endif // ROS_WRAPPER_H

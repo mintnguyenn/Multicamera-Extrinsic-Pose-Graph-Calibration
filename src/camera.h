@@ -21,6 +21,8 @@ public:
 
     void extrinsicCalibration();
 
+    cv::Mat boardDetection(cv::Mat image, cv::Mat intrinsic);
+
     cv::Mat getTransformationMatrix();
 
 private:
@@ -37,6 +39,7 @@ private:
     std::vector<std::thread> threads_; //!< Container of threads to be able to terminate then in destructor
     std::atomic<bool> running_; //!< We use this to indicate the loop in threads should still be running
 
+    std::atomic<bool> ready_;
 };
 
 #endif // CAMERA_H
