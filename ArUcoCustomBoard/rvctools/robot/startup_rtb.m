@@ -31,6 +31,7 @@ addpath( fullfile(tbpath, 'examples') );
 addpath( fullfile(tbpath, 'mex') );
 javaaddpath( fullfile(tbpath, 'DH.jar') );
 addpath( fullfile(tbpath, 'interfaces', 'VREP') );
+addpath( fullfile(tbpath, 'ply') );
 % add the contrib code to the path
 a = fullfile(rvcpath, 'contrib', 'arte');
 if exist(a, 'dir')

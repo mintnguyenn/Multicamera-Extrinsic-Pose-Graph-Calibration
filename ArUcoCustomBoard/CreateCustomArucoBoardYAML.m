@@ -17,7 +17,7 @@ close all;
 clear;
 
 %robotics toolbox for visualising
-run(['rvctools' filesep 'startup_rvc.m']);
+% run(['rvctools' filesep 'startup_rvc.m']);
 
 %yaml reader package
 addpath(genpath('yamlmatlab-master'));
@@ -141,7 +141,7 @@ switch boardType
                 j = numCols-k+1;
                 xBL = (j-1)*markerSideLen + (j - 1)*sepLen;
                 yBL = (numRows-i)*markerSideLen + (numRows-i)*sepLen;
-                zBL = -0.00312;
+                zBL = -0.0066;
                 
                 curMarkerCorners = GetMarkerCornersXYZ(xBL, yBL, zBL, markerSideLen);
                 markerCorners(ind,:) = curMarkerCorners;

@@ -94,7 +94,7 @@ function plot3d(robot, q, varargin)
         error('RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
     end
     
-    clf
+%     clf
     opt = plot_options(robot, varargin);
     
     %-- load the shape if need be
@@ -190,8 +190,8 @@ function plot3d(robot, q, varargin)
     end
 
     daspect([1 1 1]);
-    light('Position', [0 0 opt.reach*2]);
-    light('Position', [1 0.5 1]);
+%     light('Position', [0 0 opt.reach*2]);
+%     light('Position', [1 0.5 1]);
     
     
     %-- figure the colors for each shape 
@@ -212,20 +212,22 @@ function plot3d(robot, q, varargin)
     ncolors = numrows(C);
     
     h = [];
+%     robot.base = robot.base * transl([0,0,1]);
+    
     for link=0:robot.n    
         if link == 0
             if ~opt.base
                 continue;
             end
-            
+            baseLink = hgtransform('Tag', sprintf('link%d', link), 'Parent', group);
             patch('Faces', robot.faces{link+1}, 'Vertices', robot.points{link+1}, ...
-                'FaceColor', C(mod(link,ncolors)+1,:), 'EdgeAlpha', 0, 'FaceAlpha', opt.alpha);
+                    'FaceColor', C(mod(link,ncolors)+1,:), 'EdgeAlpha', 0, 'FaceAlpha', opt.alpha, ...
+                    'Parent',baseLink);
         else
             h.link(link) = hgtransform('Tag', sprintf('link%d', link), 'Parent', group);
-
             patch('Faces', robot.faces{link+1}, 'Vertices', robot.points{link+1}, ...
-                'FaceColor', C(mod(link,ncolors)+1,:), 'EdgeAlpha', 0, 'FaceAlpha', opt.alpha, ...
-            'Parent', h.link(link));
+                    'FaceColor', C(mod(link,ncolors)+1,:), 'EdgeAlpha', 0, 'FaceAlpha', opt.alpha, ...
+                'Parent', h.link(link));
         end
     end
     
@@ -234,7 +236,7 @@ function plot3d(robot, q, varargin)
     
     h.wrist = [];  % HACK, should be trplot
     h.robot = robot;
-    h.link = [0 h.link];
+    h.link = [baseLink h.link];
     set(group, 'UserData', h);
     
     robot.animate(q);

@@ -13,6 +13,7 @@ std::vector<cv::Mat> yaml::Read_Intrinsic(const std::string filename){
             intrinsic.push_back(camera_matrix);
         }
     }
+    // std::cout << intrinsic.size() << std::endl;
     return intrinsic;
 }
 

@@ -5,18 +5,18 @@
 Wrapper::Wrapper(ros::NodeHandle nh) : nh_(nh), it_(nh)
 {
   image_sub_7_ = it_.subscribe("camera7/infra1/image_rect_raw", 1000, &Wrapper::camera7ImageCallback, this);
-  cam_info_sub_7_ = nh_.subscribe("camera7/infra1/camera_info", 1000, &Wrapper::camera7InfoCallback, this);
+  // cam_info_sub_7_ = nh_.subscribe("camera7/infra1/camera_info", 1000, &Wrapper::camera7InfoCallback, this);
 
   image_sub_8_ = it_.subscribe("camera8/infra1/image_rect_raw", 1000, &Wrapper::camera8ImageCallback, this);
-  cam_info_sub_8_ = nh_.subscribe("camera8/infra1/camera_info", 1000, &Wrapper::camera8InfoCallback, this);
+  // cam_info_sub_8_ = nh_.subscribe("camera8/infra1/camera_info", 1000, &Wrapper::camera8InfoCallback, this);
 
   image_sub_9_ = it_.subscribe("camera9/infra1/image_rect_raw", 1000, &Wrapper::camera9ImageCallback, this);
-  cam_info_sub_9_ = nh_.subscribe("camera9/infra1/camera_info", 1000, &Wrapper::camera9InfoCallback, this);
+  // cam_info_sub_9_ = nh_.subscribe("camera9/infra1/camera_info", 1000, &Wrapper::camera9InfoCallback, this);
 
   image_sub_10_ = it_.subscribe("camera10/infra1/image_rect_raw", 1000, &Wrapper::camera10ImageCallback, this);
-  cam_info_sub_10_ = nh_.subscribe("camera10/infra1/camera_info", 1000, &Wrapper::camera10InfoCallback, this);
+  // cam_info_sub_10_ = nh_.subscribe("camera10/infra1/camera_info", 1000, &Wrapper::camera10InfoCallback, this);
 
-  std::shared_ptr<CameraInterface> camera7(new Camera(false, 7));
+  std::shared_ptr<CameraInterface> camera7(new Camera(true, 7));
   std::shared_ptr<CameraInterface> camera8(new Camera(false, 8));
   std::shared_ptr<CameraInterface> camera9(new Camera(false, 9));
   std::shared_ptr<CameraInterface> camera10(new Camera(false, 10));
@@ -39,99 +39,101 @@ Wrapper::~Wrapper() {}
 
 void Wrapper::camera7ImageCallback(const sensor_msgs::ImageConstPtr &msg){
   cv::Mat input_image = cv_bridge::toCvShare(msg, "bgr8")->image; // Convert sensor_msgs/Image to cv::Mat
-  cam7_->setCameraImage(input_image);
+  // cam7_->setCameraImage(input_image);
 
+  cv::Vec4d quaternion; cv::Vec3d tvec;
+  cam7_->boardDetection(input_image, cam7__.instrinsic, quaternion, tvec);
+  
   std::cout << std::endl;
-  std::cout << "Camera7: " << msg->header.stamp << std::endl;
-
-  cv::Mat tf = cam7_->boardDetection(input_image, cam7__.instrinsic);
-  std::cout << "Cam7" << tf << std::endl;
+  std::cout << "7: " << msg->header.stamp << std::endl;
+  std::cout << "7: " << quaternion << "; " << tvec << std::endl;
 
   ready_ = true;
-
-}
-
-void Wrapper::camera7InfoCallback(const sensor_msgs::CameraInfoConstPtr &info){
-  if (!flag7){
-    cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
-                             0, info->K[4], info->K[5],
-                             0, 0, 1);
-
-    cam7_->setCameraMatrix(camera_matrix);
-
-    flag7 = true;
-  }
 }
 
 void Wrapper::camera8ImageCallback(const sensor_msgs::ImageConstPtr &msg){
   if (ready_){
     cv::Mat input_image = cv_bridge::toCvShare(msg, "bgr8")->image; // Convert sensor_msgs/Image to cv::Mat
-    cam8_->setCameraImage(input_image);
+    // cam8_->setCameraImage(input_image);
 
-    std::cout << "Camera8: " << msg->header.stamp << std::endl;
+    cv::Vec4d quaternion; cv::Vec3d tvec;
+    cam8_->boardDetection(input_image, cam8__.instrinsic, quaternion, tvec);
 
-    cv::Mat tf = cam8_->boardDetection(input_image, cam8__.instrinsic);
-  std::cout << "Cam8" << tf << std::endl;
-  }
-}
-
-void Wrapper::camera8InfoCallback(const sensor_msgs::CameraInfoConstPtr &info)
-{
-  if (!flag8){
-    cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
-                             0, info->K[4], info->K[5],
-                             0, 0, 1);
-
-    cam8_->setCameraMatrix(camera_matrix);
-
-    flag8 = true;
+    std::cout << "8: " << msg->header.stamp << std::endl;
+    std::cout << "8: " << quaternion << "; " << tvec << std::endl;
   }
 }
 
 void Wrapper::camera9ImageCallback(const sensor_msgs::ImageConstPtr &msg){
   if (ready_){
     cv::Mat input_image = cv_bridge::toCvShare(msg, "bgr8")->image; // Convert sensor_msgs/Image to cv::Mat
-    cam9_->setCameraImage(input_image);
+    // cam9_->setCameraImage(input_image);
 
-    std::cout << "Camera9: " << msg->header.stamp << std::endl;
+    cv::Vec4d quaternion; cv::Vec3d tvec;
+    cam9_->boardDetection(input_image, cam9__.instrinsic, quaternion, tvec);
 
-    cv::Mat tf = cam9_->boardDetection(input_image, cam9__.instrinsic);
-  std::cout << "Cam9" << tf << std::endl;
-  }
-}
-
-void Wrapper::camera9InfoCallback(const sensor_msgs::CameraInfoConstPtr &info){
-  if (!flag9){
-    cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
-                             0, info->K[4], info->K[5],
-                             0, 0, 1);
-
-    cam9_->setCameraMatrix(camera_matrix);
-
-    flag9 = true;
+    std::cout << "9: " << msg->header.stamp << std::endl;
+    std::cout << "9: " << quaternion << "; " << tvec << std::endl;
   }
 }
 
 void Wrapper::camera10ImageCallback(const sensor_msgs::ImageConstPtr &msg){
   if (ready_){
     cv::Mat input_image = cv_bridge::toCvShare(msg, "bgr8")->image; // Convert sensor_msgs/Image to cv::Mat
-    cam10_->setCameraImage(input_image);
+    // cam10_->setCameraImage(input_image);
 
-    std::cout << "Camera10: " << msg->header.stamp << std::endl;
+    cv::Vec4d quaternion; cv::Vec3d tvec;
+    cam10_->boardDetection(input_image, cam10__.instrinsic, quaternion, tvec);
 
-    cv::Mat tf = cam10_->boardDetection(input_image, cam10__.instrinsic);
-  std::cout << "Cam10" << tf << std::endl;
+    std::cout << "10: " << msg->header.stamp << std::endl;
+    std::cout << "10:" << quaternion << "; " << tvec << std::endl;
   }
 }
 
-void Wrapper::camera10InfoCallback(const sensor_msgs::CameraInfoConstPtr &info){
-  if (!flag10){
-    cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
-                             0, info->K[4], info->K[5],
-                             0, 0, 1);
+// void Wrapper::camera7InfoCallback(const sensor_msgs::CameraInfoConstPtr &info){
+//   if (!flag7){
+//     cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
+//                              0, info->K[4], info->K[5],
+//                              0, 0, 1);
 
-    cam10_->setCameraMatrix(camera_matrix);
+//     cam7_->setCameraMatrix(camera_matrix);
 
-    flag10 = true;
-  }
-}
+//     flag7 = true;
+//   }
+// }
+
+// void Wrapper::camera8InfoCallback(const sensor_msgs::CameraInfoConstPtr &info){
+//   if (!flag8){
+//     cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
+//                              0, info->K[4], info->K[5],
+//                              0, 0, 1);
+
+//     cam8_->setCameraMatrix(camera_matrix);
+
+//     flag8 = true;
+//   }
+// }
+
+// void Wrapper::camera9InfoCallback(const sensor_msgs::CameraInfoConstPtr &info){
+//   if (!flag9){
+//     cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
+//                              0, info->K[4], info->K[5],
+//                              0, 0, 1);
+
+//     cam9_->setCameraMatrix(camera_matrix);
+
+//     flag9 = true;
+//   }
+// }
+
+// void Wrapper::camera10InfoCallback(const sensor_msgs::CameraInfoConstPtr &info){
+//   if (!flag10){
+//     cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << info->K[0], 0, info->K[2],
+//                              0, info->K[4], info->K[5],
+//                              0, 0, 1);
+
+//     cam10_->setCameraMatrix(camera_matrix);
+
+//     flag10 = true;
+//   }
+// }

@@ -152,7 +152,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
 
     J0 = jacob0(robot, q);
     J0 = J0(m, :);
-    if cond(J0) > 100
+    if (J0) > 100
         warning('RTB:ikine:singular', 'Initial joint configuration results in a (near-)singular configuration, this may slow convergence');
     end
 

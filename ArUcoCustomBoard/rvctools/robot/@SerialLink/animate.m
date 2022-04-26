@@ -28,7 +28,7 @@
 %
 % http://www.petercorke.com
 
-function animate(robot, qq)
+function animate(robot, qq, handles)
 
     if nargin < 3
         handles = findobj('Tag', robot.name);
@@ -39,7 +39,7 @@ function animate(robot, qq)
     
     % get handle of any existing graphical robots of same name
     %  one may have just been created above
-    handles = findobj('Tag', robot.name);
+%     handles = findobj('Tag', robot.name);
     
     % MAIN DISPLAY/ANIMATION LOOP
     while true
@@ -48,6 +48,8 @@ function animate(robot, qq)
         for q=qq'  % for all configurations in trajectory
             q = q';
             for handle=handles'
+%                 figure(get(get(handle,'Parent'),'Parent'));
+                axis(get(handle,'Parent'));
                 h = get(handle, 'UserData');
                 
                 % now draw it for a pose q

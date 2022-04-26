@@ -7,6 +7,8 @@
 #include <yaml-cpp/yaml.h>
 #include <unistd.h>
 
+#include <iostream>
+
 namespace yaml
 {
     std::vector<cv::Mat> Read_Intrinsic(const std::string filename);

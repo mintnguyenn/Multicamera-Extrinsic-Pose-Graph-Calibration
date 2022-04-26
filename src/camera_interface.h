@@ -8,12 +8,16 @@
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/aruco.hpp>
-// #include <opencv2/aruco/dictionary.hpp>
 #include <opencv2/calib3d.hpp>
-
 #include "yaml_reader.h"
 
-struct BoardConfiguration{
+#include <Eigen/Geometry>
+#include <tf2/LinearMath/Matrix3x3.h>
+#include <tf2/LinearMath/Transform.h>
+#include <tf2/LinearMath/Vector3.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+struct BoardConfig{
     std::vector<std::vector<cv::Point3f>> objPoints;
     cv::Ptr<cv::aruco::Dictionary> dictionary;
     std::vector<int> ids;
@@ -41,7 +45,7 @@ public:
 
     virtual void extrinsicCalibration() = 0;
 
-    virtual cv::Mat boardDetection(cv::Mat image, cv::Mat intrinsic) = 0;
+    virtual void boardDetection(cv::Mat image, cv::Mat intrinsic, cv::Vec4d &quaternion, cv::Vec3d &tvec) = 0;
 
     virtual cv::Mat getTransformationMatrix() = 0;
 };

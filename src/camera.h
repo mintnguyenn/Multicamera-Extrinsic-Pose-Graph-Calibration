@@ -21,7 +21,7 @@ public:
 
     void extrinsicCalibration();
 
-    cv::Mat boardDetection(cv::Mat image, cv::Mat intrinsic);
+    void boardDetection(cv::Mat image, cv::Mat intrinsic, cv::Vec4d &quaternion, cv::Vec3d &tvec);
 
     cv::Mat getTransformationMatrix();
 
@@ -29,7 +29,7 @@ private:
     bool show_;
     unsigned int index_;
 
-    BoardConfiguration board_config_;
+    BoardConfig board_;
 
     CameraData camera_;
 

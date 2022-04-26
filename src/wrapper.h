@@ -38,16 +38,16 @@ public:
 
 private:
     void camera7ImageCallback(const sensor_msgs::ImageConstPtr &msg);
-    void camera7InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+    // void camera7InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
 
     void camera8ImageCallback(const sensor_msgs::ImageConstPtr &msg);
-    void camera8InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+    // void camera8InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
 
     void camera9ImageCallback(const sensor_msgs::ImageConstPtr &msg);
-    void camera9InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+    // void camera9InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
 
     void camera10ImageCallback(const sensor_msgs::ImageConstPtr &msg);
-    void camera10InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+    // void camera10InfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
 
 private:
     ros::NodeHandle nh_;
