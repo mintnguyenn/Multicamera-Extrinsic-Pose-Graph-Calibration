@@ -85,7 +85,7 @@ void Wrapper::camera10ImageCallback(const sensor_msgs::ImageConstPtr &msg){
     cv::Vec4d quaternion; cv::Vec3d tvec;
     cam10_->boardDetection(input_image, cam10__.instrinsic, quaternion, tvec);
 
-    std::cout << "10: " << msg->header.stamp << std::endl;
+    std::cout << "10:" << msg->header.stamp << std::endl;
     std::cout << "10:" << quaternion << "; " << tvec << std::endl;
   }
 }

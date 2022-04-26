@@ -5,9 +5,8 @@
 
 class Camera : public CameraInterface {
 public:
-    Camera();
-
-    Camera(bool show, unsigned int index); // Default constructor
+    Camera(); // Default constructor
+    Camera(bool show, unsigned int index); 
     ~Camera();
 
     void setCameraMatrix(cv::Mat camera_matrix);

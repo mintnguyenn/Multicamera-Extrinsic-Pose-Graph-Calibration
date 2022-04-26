@@ -41,8 +41,7 @@ Camera::Camera(bool show, unsigned int index) : show_(show), index_(index)
   runThreads();
 }
 
-Camera::~Camera()
-{
+Camera::~Camera(){
   running_ = false;
   for (auto &t : threads_)
     t.join(); // Join threads

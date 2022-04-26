@@ -1,7 +1,7 @@
 #ifndef CAMERA_INTERFACE_H
 #define CAMERA_INTERFACE_H
 
-#include <iostream>
+// #include <iostream>
 #include <thread>
 #include <mutex>
 #include <atomic>
@@ -9,13 +9,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/aruco.hpp>
 #include <opencv2/calib3d.hpp>
+#include <Eigen/Geometry>
+
 #include "yaml_reader.h"
 
-#include <Eigen/Geometry>
-#include <tf2/LinearMath/Matrix3x3.h>
-#include <tf2/LinearMath/Transform.h>
-#include <tf2/LinearMath/Vector3.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 
 struct BoardConfig{
     std::vector<std::vector<cv::Point3f>> objPoints;
