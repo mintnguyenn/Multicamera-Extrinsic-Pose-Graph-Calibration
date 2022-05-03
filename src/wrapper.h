@@ -60,6 +60,7 @@ private:
     bool flag7 = false, flag8 = false, flag9 = false, flag10 = false; // Use this flag to allow get intrinsic from /camera_info once
 
     std::atomic<bool> ready_, ready2_;
+    std::atomic<int> count_;
 
     CameraData cam7__, cam8__, cam9__, cam10__;
 };

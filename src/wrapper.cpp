@@ -26,6 +26,7 @@ Wrapper::Wrapper(ros::NodeHandle nh) : nh_(nh), it_(nh)
   cam10_ = camera10;
 
   ready_ = false;
+  count_ = 22;
 
   const std::string fileName = "/home/mintnguyen/Documents/multi-cameras-calibration/yaml/camera_info.yaml";
   std::vector<cv::Mat> camera_info_vec = yaml::Read_Intrinsic(fileName);
@@ -38,6 +39,7 @@ Wrapper::Wrapper(ros::NodeHandle nh) : nh_(nh), it_(nh)
 Wrapper::~Wrapper() {}
 
 void Wrapper::camera7ImageCallback(const sensor_msgs::ImageConstPtr &msg){
+  count_++;
   cv::Mat input_image = cv_bridge::toCvShare(msg, "bgr8")->image; // Convert sensor_msgs/Image to cv::Mat
   // cam7_->setCameraImage(input_image);
 
@@ -45,10 +47,12 @@ void Wrapper::camera7ImageCallback(const sensor_msgs::ImageConstPtr &msg){
   cam7_->boardDetection(input_image, cam7__.instrinsic, quaternion, tvec);
   
   std::cout << std::endl;
-  std::cout << "7: " << msg->header.stamp << std::endl;
-  std::cout << "7: " << quaternion << "; " << tvec << std::endl;
+  // std::cout << "7: " << msg->header.stamp << std::endl;
+  // std::cout << "7: " << quaternion << "; " << tvec << std::endl;
+  std::cout << "7, " << count_ << "," << tvec[0] << "," << tvec[1] << "," << tvec[2] << "," << quaternion[0] << "," << quaternion[1] << "," << quaternion[2] << "," << quaternion[3] << std::endl;
 
   ready_ = true;
+  
 }
 
 void Wrapper::camera8ImageCallback(const sensor_msgs::ImageConstPtr &msg){
@@ -59,8 +63,9 @@ void Wrapper::camera8ImageCallback(const sensor_msgs::ImageConstPtr &msg){
     cv::Vec4d quaternion; cv::Vec3d tvec;
     cam8_->boardDetection(input_image, cam8__.instrinsic, quaternion, tvec);
 
-    std::cout << "8: " << msg->header.stamp << std::endl;
-    std::cout << "8: " << quaternion << "; " << tvec << std::endl;
+    // std::cout << "8: " << msg->header.stamp << std::endl;
+    // std::cout << "8: " << quaternion << "; " << tvec << std::endl;
+    std::cout << "8, " << count_ << "," << tvec[0] << "," << tvec[1] << "," << tvec[2] << "," << quaternion[0] << "," << quaternion[1] << "," << quaternion[2] << "," << quaternion[3] << std::endl;
   }
 }
 
@@ -72,8 +77,9 @@ void Wrapper::camera9ImageCallback(const sensor_msgs::ImageConstPtr &msg){
     cv::Vec4d quaternion; cv::Vec3d tvec;
     cam9_->boardDetection(input_image, cam9__.instrinsic, quaternion, tvec);
 
-    std::cout << "9: " << msg->header.stamp << std::endl;
-    std::cout << "9: " << quaternion << "; " << tvec << std::endl;
+    // std::cout << "9: " << msg->header.stamp << std::endl;
+    // std::cout << "9: " << quaternion << "; " << tvec << std::endl;
+    std::cout << "9, " << count_ << "," << tvec[0] << "," << tvec[1] << "," << tvec[2] << "," << quaternion[0] << "," << quaternion[1] << "," << quaternion[2] << "," << quaternion[3] << std::endl;
   }
 }
 
@@ -85,8 +91,9 @@ void Wrapper::camera10ImageCallback(const sensor_msgs::ImageConstPtr &msg){
     cv::Vec4d quaternion; cv::Vec3d tvec;
     cam10_->boardDetection(input_image, cam10__.instrinsic, quaternion, tvec);
 
-    std::cout << "10:" << msg->header.stamp << std::endl;
-    std::cout << "10:" << quaternion << "; " << tvec << std::endl;
+    // std::cout << "10:" << msg->header.stamp << std::endl;
+    // std::cout << "10:" << quaternion << "; " << tvec << std::endl;
+    std::cout << "10," << count_ << "," << tvec[0] << "," << tvec[1] << "," << tvec[2] << "," << quaternion[0] << "," << quaternion[1] << "," << quaternion[2] << "," << quaternion[3] << std::endl;
   }
 }
 
