@@ -14,8 +14,12 @@ clc;
 close all;
 clear;
 
+%robotics toolbox
+run(fullfile('rvctools', 'startup_rvc.m'));
+
 
 %% Number of cameras to calibrate
+
 numCam = 4;
 
 
@@ -68,7 +72,7 @@ poseGraph = poseGraph3D('MaxNumEdges',numEdges,'MaxNumNodes',numNodes);
 inforMatDefault = [1 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0 0 1 0 1];
 
 %the reference node
-fromNode = 1;    
+fromNode = 1;
 
 %add nodes to posegraph
 for i = 2:numNodes
@@ -98,9 +102,15 @@ fprintf("Optimising pose graph ...")
 optmPoseGraph = optimizePoseGraph(poseGraph);
 fprintf("DONE\n")
 
+
+%% Show results
+
+close all;
+
 figure('Name', 'Optimised graph')
 show(poseGraph, 'IDs', 'nodes');
 
+% display results
 varNames = {'Camera ID', 'tx', 'ty', 'tz', 'qw', 'qx', 'qy', 'qz'};
 
 disp(' ');
@@ -119,9 +129,36 @@ disp('Optimised camera poses');
 resError = sum(edgeResidualErrors(optmPoseGraph), 'all');
 fprintf("Sum of residual errors: %d\n", resError);
 
-camNodeData = [(camIDoffset+1:camIDoffset+numCam)', nodes(optmPoseGraph, 1:numCam)];
+camNodeData = [nodesMat(1:numCam,1), nodes(optmPoseGraph, 1:numCam)];
 disp(array2table(camNodeData,'VariableNames',  varNames))
 
+boardNodeData = [nodesMat(numCam + 1:end,1),nodes(optmPoseGraph, numCam+1:numNodes)];
+
+figure('Name', 'Optimised camera poses')
+R = eye(3);
+t = [0,0,0];
+pose = rigid3d(R,t);
+plotCamera('AbsolutePose', pose, 'Size', 0.05, 'AxesVisible', true, 'Label', num2str(camNodeData(1,1))); hold on;
+xyzlabel();
+
+%plot cameras
+for i = 2:numCam
+    R = quat2rotm(camNodeData(i,5:end))';
+    t = camNodeData(i,2:4);
+    pose = rigid3d(R,t);
+    plotCamera('AbsolutePose', pose, 'Size', 0.05, 'AxesVisible', true, 'Label', num2str(camNodeData(i,1)), 'Color', [0,0,1]); hold on;
+end
+
+%plot boards
+for i=1:size(boardNodeData,1)
+    R = quat2rotm(boardNodeData(i,5:end));
+    t = boardNodeData(i,2:4);
+    pose = rigid3d(R,t);
+    trplot(pose.T', 'length', 0.1, 'rviz')
+end
+
+grid on;
+axis equal;
 
 
 function poseOut = Convert2MatlabPoseOrder(poseIn)
