@@ -1,6 +1,6 @@
 # Multi-cameras extrinsic pose graph calibration
 
-*ADD DESCRIPTION*
+**Need to add a description of your ROS package and how to run your it. **
 
 ## Nodes and Edges CSV files
 
@@ -11,6 +11,10 @@
 - More information can be found in the file `nodes_edges_format.ods` (LibreOffice file)
 
 
+
+## Main_Optimise_PoseGraph_CSV
+
+This MATLAB script reads the nodes and edges CSV files and performs pose graph optimisation using MATLAB's pose-graph [implementation](https://au.mathworks.com/help/nav/ref/posegraph3d.html). 
 
 
 

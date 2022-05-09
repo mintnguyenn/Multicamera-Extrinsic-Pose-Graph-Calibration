@@ -20,7 +20,7 @@ clear;
 % run(['rvctools' filesep 'startup_rvc.m']);
 
 %yaml reader package
-addpath(genpath('yamlmatlab-master'));
+addpath(genpath(fullfile('..','ext_lib','yamlmatlab-master')));
 
 
 %% Ask for type of board
