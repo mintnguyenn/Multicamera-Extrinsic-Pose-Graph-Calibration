@@ -68,7 +68,7 @@ fprintf("Setting up pose graph ...")
 poseGraph = poseGraph3D('MaxNumEdges',numEdges,'MaxNumNodes',numNodes);
 
 %default information matrix (information matrix is inverse of covariance
-%and accounts for noise)
+%and accounts for sensor noise)
 inforMatDefault = [1 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0 0 1 0 1];
 
 %the reference node
@@ -80,9 +80,6 @@ for i = 2:numNodes
     addRelativePose(poseGraph, curPose, inforMatDefault, fromNode);
 end
 
-figure('Name', 'All nodes')
-show(poseGraph, 'IDs', 'nodes');
-
 %add edges to posegraph
 for i = 1:numEdges
     curPose = Convert2MatlabPoseOrder(edgesMat(i,3:end));
@@ -91,26 +88,75 @@ for i = 1:numEdges
     addRelativePose(poseGraph, curPose, inforMatDefault, camNode, boardNode);
 end
 
+%plot graph before optimising
+fname = 'graph_before_after_optimising';
+hfig = figure('Name', 'Before Optimisation: nodes and edges');
+tiledlayout(2,1, 'Padding', 'compact');
+
+ax1 = nexttile;
+show(poseGraph, 'IDs', 'off'); hold on;
+xlabel('x (m)')
+ylabel('y (m)')
+zlabel('z (m)')
+title('Before Optimisation');
+
+camNodeData = [(camIDoffset+1:camIDoffset+numCam)', nodes(poseGraph, 1:numCam)];
+
+%plot cameras
+for i = 1:numCam
+    t = camNodeData(i,2:4);
+    cam = camNodeData(i,1);
+    text(t(1)+0.02, t(2)-0.02, t(3), num2str(cam), 'Color', 'blue', 'Clipping', 'on');
+
+end
+
+axis auto;
+
 fprintf("DONE\n")
 
 %% Perform optimisation
-
-figure('Name', 'All nodes and edges')
-show(poseGraph, 'IDs', 'nodes');
 
 fprintf("Optimising pose graph ...")
 optmPoseGraph = optimizePoseGraph(poseGraph);
 fprintf("DONE\n")
 
-
 %% Show results
+
+% plot graph after optimising
+ax2 = nexttile;
+show(optmPoseGraph, 'IDs', 'off');
+xlabel('x (m)')
+ylabel('y (m)')
+zlabel('z (m)')
+title('After Optimisation');
+
+camNodeData = [(camIDoffset+1:camIDoffset+numCam)', nodes(optmPoseGraph, 1:numCam)];
+
+for i = 1:numCam
+    t = camNodeData(i,2:4);
+    cam = camNodeData(i,1);
+    text(t(1)+0.02, t(2)-0.02, t(3), num2str(cam), 'Color', 'blue', 'Clipping', 'on');
+end
+
+linkaxes([ax1 ax2])
+axis auto;
+
+picturewidth = 20; % set this parameter and keep it forever
+hw_ratio = 1.2; % feel free to play with this ratio
+
+% set(findall(hfig,'-property','Box'),'Box','on') % optional
+set(findall(hfig,'-property','FontSize'),'FontSize',14) % adjust fontsize to your document
+set(findall(hfig,'-property','Interpreter'),'Interpreter','latex') 
+set(findall(hfig,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
+set(hfig,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
+pos = get(hfig,'Position');
+set(hfig,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
+print(hfig,fullfile(csvDir, fname),'-dpng','-painters')
 
 close all;
 
-figure('Name', 'Optimised graph')
-show(poseGraph, 'IDs', 'nodes');
 
-% display results
+% display results in table
 varNames = {'Camera ID', 'tx', 'ty', 'tz', 'qw', 'qx', 'qy', 'qz'};
 
 disp(' ');
@@ -134,31 +180,54 @@ disp(array2table(camNodeData,'VariableNames',  varNames))
 
 boardNodeData = [nodesMat(numCam + 1:end,1),nodes(optmPoseGraph, numCam+1:numNodes)];
 
-figure('Name', 'Optimised camera poses')
+fname = 'optimised_pose_graph.png';
+hfig = figure('Name', 'Optimised camera poses');
 R = eye(3);
 t = [0,0,0];
 pose = rigid3d(R,t);
-plotCamera('AbsolutePose', pose, 'Size', 0.05, 'AxesVisible', true, 'Label', num2str(camNodeData(1,1))); hold on;
-xyzlabel();
+plotCamera('AbsolutePose', pose, 'Size', 0.05, 'AxesVisible', false, 'Label', num2str(camNodeData(1,1))); hold on;
+trplot(pose.T', 'length', 0.1, 'thick', 2, 'rgb', 'notext', 'noarrow')
+xlabel('x (m)')
+ylabel('y (m)')
+zlabel('z (m)')
+set(findall(hfig,'-property','FontSize'),'FontSize',14) % adjust fontsize to your document
+
 
 %plot cameras
 for i = 2:numCam
     R = quat2rotm(camNodeData(i,5:end))';
     t = camNodeData(i,2:4);
     pose = rigid3d(R,t);
-    plotCamera('AbsolutePose', pose, 'Size', 0.05, 'AxesVisible', true, 'Label', num2str(camNodeData(i,1)), 'Color', [0,0,1]); hold on;
+    plotCamera('AbsolutePose', pose, 'Size', 0.05, 'AxesVisible', false, 'Label', num2str(camNodeData(i,1)), 'Color', [0,0,1]); hold on;
+    trplot(pose.T', 'length', 0.1, 'thick', 2, 'rgb', 'notext', 'noarrow')
 end
 
 %plot boards
-for i=1:size(boardNodeData,1)
+for i=1:10:size(boardNodeData,1)
     R = quat2rotm(boardNodeData(i,5:end));
     t = boardNodeData(i,2:4);
     pose = rigid3d(R,t);
-    trplot(pose.T', 'length', 0.1, 'rviz')
+    trplot(pose.T', 'length', 0.05, 'thick', 2, 'rgb', 'notext', 'noarrow')
+    text(t(1), t(2), t(3), num2str(i));
 end
 
 grid on;
 axis equal;
+view(5,-45)
+
+picturewidth = 20; % set this parameter and keep it forever
+hw_ratio = 0.6; % feel free to play with this ratio
+
+% set(findall(hfig,'-property','Box'),'Box','on') % optional
+set(findall(hfig,'-property','Interpreter'),'Interpreter','latex') 
+set(findall(hfig,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
+set(hfig,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidth])
+pos = get(hfig,'Position');
+set(hfig,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
+print(hfig,fullfile(csvDir, fname),'-dpng','-painters')
+
+
+
 
 
 function poseOut = Convert2MatlabPoseOrder(poseIn)
