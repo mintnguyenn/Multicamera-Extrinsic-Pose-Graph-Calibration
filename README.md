@@ -26,8 +26,8 @@ This MATLAB script reads the nodes and edges CSV files and performs pose graph o
 
 ## To-Do
 
-- Add the block diagram to readme
-- Synchronisation of camera 7 due to hardware sync. Detect camera 7 images to find the consecutive images of the other cameras. (When camera 7 triggers, the other cameras will trigger)
-- Create function for populating g20 file from given edges. Run g20 separately first.
-- Add g2o graph optimisation to framework
-- Setup the calibration as a pose graph optimisation problem
+- [ ] Add the block diagram to readme
+- [ ] Synchronisation of camera 7 due to hardware sync. Detect camera 7 images to find the consecutive images of the other cameras. (When camera 7 triggers, the other cameras will trigger)
+- [ ] Create function for populating g20 file from given edges. Run g20 separately first.
+- [ ] Add g2o graph optimisation to framework
+- [ ] Setup the calibration as a pose graph optimisation problem
