@@ -167,7 +167,8 @@ disp('Initial guess of camera poses');
 fprintf("Sum of residual errors: %d\n", resError);
 
 camNodeData = [(camIDoffset+1:camIDoffset+numCam)', nodes(poseGraph, 1:numCam)];
-disp(array2table(camNodeData,'VariableNames',  varNames))
+disp(array2table(camNodeData,'VariableNames',  varNames));
+
 
 disp(' ');
 
@@ -176,7 +177,12 @@ resError = sum(edgeResidualErrors(optmPoseGraph), 'all');
 fprintf("Sum of residual errors: %d\n", resError);
 
 camNodeData = [nodesMat(1:numCam,1), nodes(optmPoseGraph, 1:numCam)];
-disp(array2table(camNodeData,'VariableNames',  varNames))
+finalTable = array2table(camNodeData,'VariableNames',  varNames);
+disp(finalTable);
+
+%save final optimised parameters to csv
+writetable(finalTable, fullfile(csvDir, "optimised_camera_poses.csv"));
+
 
 boardNodeData = [nodesMat(numCam + 1:end,1),nodes(optmPoseGraph, numCam+1:numNodes)];
 
@@ -218,6 +224,8 @@ view(5,-45)
 picturewidth = 20; % set this parameter and keep it forever
 hw_ratio = 0.6; % feel free to play with this ratio
 
+
+warning('off');
 % set(findall(hfig,'-property','Box'),'Box','on') % optional
 set(findall(hfig,'-property','Interpreter'),'Interpreter','latex') 
 set(findall(hfig,'-property','TickLabelInterpreter'),'TickLabelInterpreter','latex')
@@ -225,6 +233,7 @@ set(hfig,'Units','centimeters','Position',[3 3 picturewidth hw_ratio*picturewidt
 pos = get(hfig,'Position');
 set(hfig,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)])
 print(hfig,fullfile(csvDir, fname),'-dpng','-painters')
+warning('on');
 
 
 
