@@ -39,6 +39,8 @@ private:
     std::atomic<bool> running_; //!< We use this to indicate the loop in threads should still be running
 
     std::atomic<bool> ready_;
+
+    cv::Mat input_image, intrinsic;
 };
 
 #endif // CAMERA_H

@@ -64,7 +64,7 @@ void Camera::setCameraImage(cv::Mat input_image)
 
 void Camera::boardDetection(cv::Mat image, cv::Mat intrinsic, cv::Vec4d &quaternion, cv::Vec3d &tvec){
 
-  // cv::Quate
+  // cv::Quaternion
   if (!image.empty() && !intrinsic.empty()){
 
     cv::Mat distCoeffs;
