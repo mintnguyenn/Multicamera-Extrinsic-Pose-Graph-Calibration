@@ -3,13 +3,12 @@
 
 #include "camera_interface.h"
 
-class Camera : public CameraInterface {
+class Camera : public CameraInterface
+{
 public:
     Camera(); // Default constructor
-    Camera(bool show, unsigned int index); 
+    Camera(unsigned int index);
     ~Camera();
-
-    void setCameraMatrix(cv::Mat camera_matrix);
 
     void setCameraImage(cv::Mat input_image);
 
@@ -18,29 +17,24 @@ public:
     */
     void runThreads();
 
-    void extrinsicCalibration();
+    void boardEstimationTesting();
 
-    void boardDetection(cv::Mat image, cv::Mat intrinsic, cv::Vec4d &quaternion, cv::Vec3d &tvec);
-
-    cv::Mat getTransformationMatrix();
+    bool arucoBoardDetection(cv::Mat image, cv::Vec4d &quaternion, cv::Vec3d &tvec);
 
 private:
-    bool show_;
     unsigned int index_;
 
-    BoardConfig board_;
+    cv::Mat image_;
+    std::mutex img_mtx_;
+    cv::Mat intrinsic_;
 
-    CameraData camera_;
-
-    cv::Mat tf_;
-    std::mutex tf_mtx_, mtxx_;
+    BoardConfiguration aruco_board_;
+    cv::Ptr<cv::aruco::DetectorParameters> parameters_;
+    cv::Ptr<cv::aruco::Board> board_;
 
     std::vector<std::thread> threads_; //!< Container of threads to be able to terminate then in destructor
-    std::atomic<bool> running_; //!< We use this to indicate the loop in threads should still be running
-
+    std::atomic<bool> running_;        //!< We use this to indicate the loop in threads should still be running
     std::atomic<bool> ready_;
-
-    cv::Mat input_image, intrinsic;
 };
 
 #endif // CAMERA_H

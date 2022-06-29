@@ -13,26 +13,15 @@
 
 #include "yaml_reader.h"
 
-
-
-struct BoardConfig{
+struct BoardConfiguration{
     std::vector<std::vector<cv::Point3f>> objPoints;
     cv::Ptr<cv::aruco::Dictionary> dictionary;
     std::vector<int> ids;
 }; 
 
-struct CameraData{
-    cv::Mat image;
-    std::mutex img_mtx;
-    cv::Mat instrinsic;
-    std::mutex i_mtx;
-};
-
 class CameraInterface{
 public:
     CameraInterface(){}; // Default constructor
-
-    virtual void setCameraMatrix(cv::Mat camera_matrix) = 0;
 
     virtual void setCameraImage(cv::Mat input_image) = 0;
 
@@ -41,11 +30,9 @@ public:
     */
     virtual void runThreads() = 0;
 
-    virtual void extrinsicCalibration() = 0;
+    virtual void boardEstimationTesting() = 0;
 
-    virtual void boardDetection(cv::Mat image, cv::Mat intrinsic, cv::Vec4d &quaternion, cv::Vec3d &tvec) = 0;
-
-    virtual cv::Mat getTransformationMatrix() = 0;
+    virtual bool arucoBoardDetection(cv::Mat image, cv::Vec4d &quaternion, cv::Vec3d &tvec) = 0;
 };
 
 #endif // CAMERA_INTERFACE_H

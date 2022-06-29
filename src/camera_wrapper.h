@@ -35,20 +35,22 @@ public:
      */
     ~CameraWrapper();
 
+    void setCamera(std::shared_ptr<CameraInterface> cam);
+
 private:
     void cameraImageCallback(const sensor_msgs::ImageConstPtr &msg);
 
-    void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
-
+    // void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &info);
+    
 private:
     ros::NodeHandle nh_;
     image_transport::ImageTransport it_;
-    ros::Subscriber cam_info_sub_;          // Subscriber
+    // ros::Subscriber cam_info_sub_;          // Subscriber
     image_transport::Subscriber image_sub_; // Subscriber
 
     std::shared_ptr<CameraInterface> cam_;
 
-    bool flag = false; // Use this flag to allow get intrinsic from /camera_info once
+    // bool flag = false; // Use this flag to allow get intrinsic from /camera_info once
     int camera_index_;
 };
 
