@@ -47,13 +47,14 @@ include_directories(
 ## Libraries ##
 ###############
 ## Declare C++ libraries here
-add_library(${PROJECT_NAME}_my_library src/camera_wrapper.cpp src/wrapper.cpp src/camera.cpp src/yaml_reader.cpp)
+add_library(${PROJECT_NAME}_my_library src/camera_wrapper.cpp src/wrapper.cpp src/camera.cpp src/yaml_reader.cpp )
 
 ###############
 ## Executable ##
 ###############
 ## Declare C++ executable
-add_executable(${PROJECT_NAME} src/main.cpp src/camera_wrapper.cpp src/wrapper.cpp src/yaml_reader.cpp)
+# src/wrapper_single.cpp
+add_executable(${PROJECT_NAME} src/main.cpp src/camera_wrapper.cpp src/wrapper.cpp src/yaml_reader.cpp )
 
 ## Add cmake target dependencies of the executable, enforces generating messages
 ## VERY VERY VERY HIGHLY unlikely to change

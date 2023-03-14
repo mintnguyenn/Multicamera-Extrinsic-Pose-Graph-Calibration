@@ -35,18 +35,21 @@ cv::Vec4d rvecToQuaternion(cv::Vec3d rvec)
 
 Camera::Camera(unsigned int index) : index_(index)
 {
-  const std::string aruco_board_markers = "/home/mintnguyen/Documents/Multicamera-Extrinsic-Pose-Graph-Calibration/yaml/aruco-board-markers.yaml";
+  const std::string aruco_board_markers = "/home/jmeh/catkin_ws/src/Multicamera-Extrinsic-Pose-Graph-Calibration/yaml/aruco-board-markers.yaml";
   yaml::Read_ArUco(aruco_board_markers, aruco_board_.dictionary, aruco_board_.ids, aruco_board_.objPoints);
 
-  const std::string fileName = "/home/mintnguyen/Documents/Multicamera-Extrinsic-Pose-Graph-Calibration/yaml/camera_info.yaml";
+
+  const std::string fileName = "/home/jmeh/catkin_ws/src/Multicamera-Extrinsic-Pose-Graph-Calibration/yaml/camera_info.yaml";
   std::vector<cv::Mat> intrinsic_vectors = yaml::Read_Intrinsic(fileName);
   intrinsic_ = intrinsic_vectors.at(index);
 
-  runThreads();
+  
 
   // Initialise the ArUco board configuration
   parameters_ = cv::aruco::DetectorParameters::create();
   board_ = cv::aruco::Board::create(aruco_board_.objPoints, aruco_board_.dictionary, aruco_board_.ids);
+
+  // runThreads();
 }
 
 Camera::~Camera()
@@ -90,7 +93,12 @@ bool Camera::arucoBoardDetection(cv::Mat image, cv::Vec4d &quaternion, cv::Vec3d
     cv::Vec3d rvec;
     if (!objPoints.empty() && !imgPoints.empty())
       cv::solvePnP(objPoints, imgPoints, intrinsic_, distCoeffs, rvec, tvec, false, cv::SOLVEPNP_ITERATIVE);
-
+    else {
+      quaternion = 0;
+      tvec = 0;
+      return false;
+    }
+    
     quaternion = rvecToQuaternion(rvec);
 
     return true;
@@ -114,7 +122,7 @@ void Camera::boardEstimationTesting(void)
 
     if (!input_image.empty() && !intrinsic_.empty())
     {
-      cv::Mat output_image = input_image.clone();
+      // cv::Mat output_image = input_image.clone();
 
       cv::Mat distCoeffs;
       // Marker detection
@@ -124,8 +132,8 @@ void Camera::boardEstimationTesting(void)
       // cv::Ptr<cv::aruco::Board> board = cv::aruco::Board::create(board_.objPoints, board_.dictionary, board_.ids);
       cv::aruco::detectMarkers(input_image, aruco_board_.dictionary, markerCorners, markerIds, parameters_, rejectedCandidates);
 
-      if (!markerIds.empty())
-        cv::aruco::drawDetectedMarkers(output_image, markerCorners, markerIds);
+      // if (!markerIds.empty())
+      //   cv::aruco::drawDetectedMarkers(output_image, markerCorners, markerIds);
 
       std::vector<cv::Point3f> objPoints;
       std::vector<cv::Point2f> imgPoints;
@@ -134,13 +142,16 @@ void Camera::boardEstimationTesting(void)
       if (!objPoints.empty() && !imgPoints.empty())
       {
         cv::solvePnP(objPoints, imgPoints, intrinsic_, distCoeffs, rvec, tvec, false, cv::SOLVEPNP_ITERATIVE);
-        cv::aruco::drawAxis(output_image, intrinsic_, distCoeffs, rvec, tvec, 0.1);
+        // cv::aruco::drawAxis(output_image, intrinsic_, distCoeffs, rvec, tvec, 0.1);
       }
 
-      std::string name = std::to_string(index_);
-      cv::imshow(name, output_image);
-      cv::waitKey(10);
+      // std::string name = std::to_string(index_);
+      // cv::imshow(name, output_image);
+      // cv::waitKey(10);
+      
     }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     if (!running_)
       break;

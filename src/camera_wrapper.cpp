@@ -10,7 +10,11 @@ CameraWrapper::CameraWrapper(ros::NodeHandle nh, unsigned int camera_index) : nh
   image_sub_ = it_.subscribe(image_message, 1000, &CameraWrapper::cameraImageCallback, this);
   // cam_info_sub_ = nh_.subscribe(cam_info_message, 1000, &CameraWrapper::cameraInfoCallback, this);
 
+  ROS_INFO_STREAM("subscribed to " << image_message);
+
   camera_index_ = camera_index;
+
+  board_index_ = 22;
 }
 
 // Default destructor
@@ -19,14 +23,35 @@ CameraWrapper::~CameraWrapper() {}
 void CameraWrapper::cameraImageCallback(const sensor_msgs::ImageConstPtr &msg)
 {
   cv::Mat input_image = cv_bridge::toCvShare(msg, "bgr8")->image; // Convert sensor_msgs/Image to cv::Mat
-  cam_->setCameraImage(input_image);
+  // cam_->setCameraImage(input_image);
+  // ros::time timeStamp = msg->header.
+  auto timeStamp = msg->header.stamp;
+
+  // get timestamp from ros message
 
   cv::Vec4d quaternion; cv::Vec3d tvec;
-  cam_->arucoBoardDetection(input_image, quaternion, tvec);
+  if (cam_->arucoBoardDetection(input_image, quaternion, tvec)){
+    
 
-  std::cout << camera_index_ << "," << tvec[0] << "," << tvec[1] << "," << tvec[2] << "," << quaternion[0] << "," << quaternion[1] << "," << quaternion[2] << "," << quaternion[3] << std::endl;
+  BoardCameraExtrinsic curExt;
+  curExt.camIndex = camera_index_;
+  curExt.boardIndex = board_index_;
+  curExt.quaternion = quaternion;
+  curExt.tvec = tvec;
+  curExt.stamp = timeStamp;
+  boardExtrinsics.push_back(curExt);
+
+  }
+
+  // std::cout << camera_index_ << "," << timeStamp << "," << tvec[0] << "," << tvec[1] << "," << tvec[2] << "," << quaternion[0] << "," << quaternion[1] << "," << quaternion[2] << "," << quaternion[3] << std::endl;
 }
 
 void CameraWrapper::setCamera(std::shared_ptr<CameraInterface> cam){
   cam_ = cam;
 }
+
+std::vector<BoardCameraExtrinsic> CameraWrapper::getcopyboardextrinsicdata()
+{
+  return boardExtrinsics;
+} 
+
