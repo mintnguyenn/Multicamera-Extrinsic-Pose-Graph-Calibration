@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 
   std::cout << "Number of estimated poses across all cameras: " << allData.size() << std::endl;
 
-  writeVectorToCSV("test.csv", allData);
+  writeVectorToCSV("camera_board_poses_timestamped.csv", allData);
     // allData.push_back();
     // a.insert(std::end(a), std::begin(b), std::end(b));
 

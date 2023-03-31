@@ -17,6 +17,21 @@ CameraWrapper::CameraWrapper(ros::NodeHandle nh, unsigned int camera_index) : nh
   board_index_ = 22;
 }
 
+CameraWrapper::CameraWrapper(ros::NodeHandle nh, std::string topic, unsigned int camera_index) : nh_(nh), it_(nh)
+{
+  // std::string image_message = "camera" + std::to_string(camera_index) + "/infra1/image_rect_raw";
+  // std::string cam_info_message = "camera" + std::to_string(camera_index) + "/infra1/camera_info";
+
+  image_sub_ = it_.subscribe(topic, 1000, &CameraWrapper::cameraImageCallback, this);
+  // cam_info_sub_ = nh_.subscribe(cam_info_message, 1000, &CameraWrapper::cameraInfoCallback, this);
+
+  ROS_INFO_STREAM("subscribed to " << topic);
+
+  camera_index_ = camera_index;
+
+  board_index_ = 22;
+}
+
 // Default destructor
 CameraWrapper::~CameraWrapper() {}
 

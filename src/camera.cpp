@@ -1,4 +1,5 @@
 #include "camera.h"
+#include <filesystem>
 
 cv::Mat rvectvecToTransformationMatrix(cv::Vec3d &rvec, cv::Vec3d &tvec)
 {
@@ -35,12 +36,31 @@ cv::Vec4d rvecToQuaternion(cv::Vec3d rvec)
 
 Camera::Camera(unsigned int index) : index_(index)
 {
-  const std::string aruco_board_markers = "/home/jmeh/catkin_ws/src/Multicamera-Extrinsic-Pose-Graph-Calibration/yaml/aruco-board-markers.yaml";
-  yaml::Read_ArUco(aruco_board_markers, aruco_board_.dictionary, aruco_board_.ids, aruco_board_.objPoints);
+  std::filesystem::path yamlPath(__FILE__);
+  // std::cout << yamlPath << std::endl;
+  yamlPath = yamlPath.parent_path();
+  // std::cout << yamlPath << std::endl;
+  yamlPath = yamlPath.parent_path();
+  // std::cout << yamlPath << std::endl;
+  yamlPath = yamlPath / "yaml";
+  // std::cout << yamlPath << std::endl;
+  std::filesystem::path aruco_board_markers = yamlPath / "aruco-board-markers.yaml";
 
+  // std::string aruco_board_markers(yamlPath.string()  + "aruco-board-markers.yaml");
 
-  const std::string fileName = "/home/jmeh/catkin_ws/src/Multicamera-Extrinsic-Pose-Graph-Calibration/yaml/camera_info.yaml";
+  
+  // const std::string aruco_board_markers = "/home/jmeh/catkin_ws/src/Multicamera-Extrinsic-Pose-Graph-Calibration/yaml/aruco-board-markers.yaml";
+  // std::cout << aruco_board_markers.string() << std::endl;
+  yaml::Read_ArUco(aruco_board_markers.string(), aruco_board_.dictionary, aruco_board_.ids, aruco_board_.objPoints);
+
+  // std::cout << "READ ARUCO" << std::endl;
+
+  std::filesystem::path fileName = yamlPath / "camera_info.yaml";
   std::vector<cv::Mat> intrinsic_vectors = yaml::Read_Intrinsic(fileName);
+
+
+  // std::cout << "READ camera info" << std::endl;
+
   intrinsic_ = intrinsic_vectors.at(index);
 
   
