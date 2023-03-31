@@ -4,7 +4,7 @@ project(multi_camera_calibration)
 find_package(PkgConfig)
 pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.6)
 
-find_package(yaml-cpp REQUIRED)
+find_package(yaml-cpp 0.6 REQUIRED)
 
 if (NOT yaml-cpp_FOUND)
     message(FATAL_ERROR "Could NOT find yaml-cpp")
@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
 )
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.0 REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
@@ -47,7 +47,7 @@ include_directories(
 ## Libraries ##
 ###############
 ## Declare C++ libraries here
-add_library(${PROJECT_NAME}_my_library src/camera_wrapper.cpp src/wrapper.cpp src/camera.cpp src/yaml_reader.cpp )
+add_library(${PROJECT_NAME}_my_library src/camera_wrapper.cpp src/camera.cpp src/yaml_reader.cpp )
 
 ###############
 ## Executable ##
